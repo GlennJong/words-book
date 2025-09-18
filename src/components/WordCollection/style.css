@@ -15,6 +15,17 @@
   height: 100%;
 }
 
+.card > .inner > .level {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Roboto';
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+}
 .card > .inner > .title {
   margin: 12px;
   font-family: 'Roboto';

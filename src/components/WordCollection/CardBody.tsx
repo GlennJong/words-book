@@ -48,22 +48,14 @@ const CARDSIZE = {
 
 const CardBody = ({ word, description, instance, translation, level }: CardBodyProps) => {
   return (
-    <div className="card" style={{ maxWidth: '65vw', maxHeight: '55vh', ...CARDSIZE, ...wordcardBackground['pattern_2'] }}>
+    <div className="card" style={{ maxWidth: '65vw', maxHeight: '50vh', ...CARDSIZE, ...wordcardBackground['pattern_2'] }}>
       <div className="inner">
         <div
           className="level"
           style={{
             position: 'absolute',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
             left: '12px',
             top: '12px',
-            color: '#fff',
-            border: '2px solid #fff',
-            borderRadius: '50%',
-            width: '24px',
-            height: '24px',
           }}
         >
           { level }

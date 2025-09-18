@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type AsIdHook = {
   asId: string | undefined;
@@ -24,9 +24,12 @@ function getAsIdFromUrlOrCookie(): string | undefined {
 
 export const useAsId = (): AsIdHook => {
   const [asId, setAsId] = useState<string | undefined>(getAsIdFromUrlOrCookie());
+  useEffect(() => {
+    if (asId) document.cookie = `as_id=${asId}; path=/; max-age=31536000;`
+  }, [asId])
   
   return {
     asId,
-    setAsId
+    setAsId,
   };
 };
