@@ -1,13 +1,12 @@
-import { useContext } from 'react';
-import './backgrounds.css';
 import WordCollection from '@/components/WordCollection';
-import { GlobalSettingContext } from '@/App';
 import LoadingAnimation from '@/components/LoadingAnimation';
 import { Book } from '../../components/Icons/index';
 import { useWordDataContext, WordDataProvider } from '@/context/WordData/context';
+import { useGlobalSettings } from '@/context/GlobalSetting/context';
+import './backgrounds.css';
 
 function Main() {
-  const { asId, setAsId } = useContext(GlobalSettingContext);
+  const { asId, setAsId } = useGlobalSettings();
   
   return (
     <WordDataProvider asId={asId}>

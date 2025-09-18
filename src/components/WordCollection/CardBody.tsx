@@ -48,7 +48,7 @@ const CARDSIZE = {
 
 const CardBody = ({ word, description, instance, translation, level }: CardBodyProps) => {
   return (
-    <div className="card" style={{ maxWidth: '85vw', maxHeight: '85vh', ...CARDSIZE, ...wordcardBackground['pattern_2'] }}>
+    <div className="card" style={{ maxWidth: '65vw', maxHeight: '55vh', ...CARDSIZE, ...wordcardBackground['pattern_2'] }}>
       <div className="inner">
         <div
           className="level"

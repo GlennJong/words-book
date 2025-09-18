@@ -104,6 +104,15 @@ const WordCollection = () => {
     cardMovingHandler(delta, coverRef.current, cardRef.current);
   }, []);
 
+  const handleCardUpgrade = () => {
+    const current = data[curIndexRef.current];
+    updateWord({...current, level: Math.min(5, current.level + 1)});
+  }
+  const handleCardDowngrade = () => {
+    const current = data[curIndexRef.current];
+    updateWord({...current, level: Math.max(0, current.level -1)});
+  }
+  
   const handleCardTouchEnd = useCallback(async function({ delta }: { delta?: number[] }) {
     if (delta && delta.length > 0 && (Math.abs(delta[0]) > ACTIVE_X || Math.abs(delta[1]) > ACTIVE_Y)) {
       
@@ -111,12 +120,10 @@ const WordCollection = () => {
 
       const direction = delta[0] > 0 ? 'right' : 'left';
       if (direction === 'right') {
-        const current = data[curIndexRef.current];
-        updateWord({...current, level: Math.min(5, current.level + 1)});
+        handleCardUpgrade();
       }
       else {
-        const current = data[curIndexRef.current];
-        updateWord({...current, level: Math.max(0, current.level -1)});
+        handleCardDowngrade();
       }
       disableTouch();
       await cardAutoMoveoutStyleHandler(150, direction, cardRef.current);
@@ -130,10 +137,10 @@ const WordCollection = () => {
     }
   }, [handleGoToNextCard])
 
-  const handleClickNextButton = useCallback(async() => {
+  const handleMoveToNextButton = useCallback(async(direction?:'left'|'right') => {
     if (!cardRef.current || !coverRef.current) return;
     disableTouch();
-    await cardAutoMoveoutStyleHandler(600, 'right', cardRef.current);
+    await cardAutoMoveoutStyleHandler(600, direction || 'right', cardRef.current);
     handleGoToNextCard();
     cardResetStyleHandler(coverRef.current, cardRef.current, false);
     enableTouch();
@@ -202,60 +209,71 @@ const WordCollection = () => {
           </div>
         }
       </div>
-      <button
-        className="fancy-button"
-        onClick={handleClickNextButton}
-        onTouchStart={(e) => e.currentTarget.classList.add('active')}
-        onTouchEnd={(e) => e.currentTarget.classList.remove('active')}
-      >
-        Next
-      </button>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <FancyButton
+          onClick={() => {
+            handleCardDowngrade();
+            handleMoveToNextButton('left');
+          }}
+        >
+          Downgrade
+        </FancyButton>
+        <FancyButton
+          onClick={() => handleMoveToNextButton()}
+        >
+          Pass
+        </FancyButton>
+        <FancyButton
+          onClick={() => {
+            handleCardUpgrade();
+            handleMoveToNextButton('right');
+          }}
+        >
+          Upgrade
+        </FancyButton>
+      </div>
       <div style={{
         position: 'fixed',
         display: 'flex',
         flexDirection: 'column',
         gap: '10px',
-        right: '12px',
+        right: '6px',
         bottom: '12px',
+        zIndex: '99'
       }}>
         { isLevelMode &&
-          <button
-            className="fancy-button rounded"
+          <FancyRoundButton
             onClick={() => {
               upperLevel(level+1);
               setCurIndex(0);
-            }}
-          >
+            }}>
             ⇮
-          </button>
+          </FancyRoundButton>
         }
-        <button
-          className="fancy-button rounded"
+        <FancyRoundButton
           onClick={() => {
             setIsLevelMode(!isLevelMode);
             setCurIndex(0);
           }}
+          style={{fontSize: '12px'}}
         >
-          { isLevelMode ? level : '⁕' }
-        </button>
-        <button
-          className="fancy-button rounded"
+          { isLevelMode ? level : 'mix' }
+        </FancyRoundButton>
+        <FancyRoundButton
           onClick={() => setIsCreateNewWordOpen(true)}
         >
           +
-        </button>
-        <button
-          className="fancy-button rounded"
+        </FancyRoundButton>
+        <FancyRoundButton
           onClick={() => setIsUpdateWordOpen(true)}
         >
           ✎
-        </button>
-        <button
-          className="fancy-button rounded"
+        </FancyRoundButton>
+        <FancyRoundButton
           onClick={() => suffle()}
         >
           ⟲
-        </button>
+        </FancyRoundButton>
       </div>
       <FullScreenPanel open={isCreateNewWordOpen} setOpen={setIsCreateNewWordOpen}>
         <WordForm mode="create" onConfirm={() => setIsCreateNewWordOpen(false)} />
@@ -275,5 +293,31 @@ const CardWrapper3D = ({ children }: { children: React.ReactNode }) => (
     { children }
   </div>
 )
+
+const FancyButton = ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+  return (
+    <button
+      className="fancy-button"
+      onTouchStart={(e) => e.currentTarget.classList.add('active')}
+      onTouchEnd={(e) => e.currentTarget.classList.remove('active')}
+      { ...props }
+    >
+      { children }
+    </button>
+  )
+}
+
+const FancyRoundButton = ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+  return (
+    <button
+      className="fancy-button rounded"
+      onTouchStart={(e) => e.currentTarget.classList.add('active')}
+      onTouchEnd={(e) => e.currentTarget.classList.remove('active')}
+      { ...props }
+    >
+      { children }
+    </button>
+  )
+}
 
 export default WordCollection;

@@ -4,7 +4,7 @@ import { getData, postData } from '@/utils/fetch';
 import './style.css';
 import { useWordDataContext } from '@/context/WordData/context';
 import { WordData } from '@/pages/MainScreen/type';
-import { useGlobalSetting } from '@/App';
+import { useGlobalSettings } from '@/context/GlobalSetting/context';
 
 type WordFormProps = {
   mode: 'create' | 'edit';
@@ -16,6 +16,8 @@ type WordFormProps = {
 type GenerateWordResponse = {
   status: string;
   message: string;
+  sentence?: string;
+  definition?: string;
 };
 
 async function postGenerateWord(asId: string, word: string) {
@@ -24,11 +26,29 @@ async function postGenerateWord(asId: string, word: string) {
       `https://script.google.com/macros/s/${asId}/exec`,
       {
         method: 'generate-sentence',
-        data: { word }
+        data: [word]
       }
     ) as unknown as GenerateWordResponse;
     if (result && result.status !== 'error') {
-      return result.message;
+      return result.sentence;
+    }
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
+
+async function postGenerateDefinition(asId: string, word: string) {
+  try {
+    const result = await postData(
+      `https://script.google.com/macros/s/${asId}/exec`,
+      {
+        method: 'generate-definition',
+        data: [word]
+      }
+    ) as unknown as GenerateWordResponse;
+    if (result && result.status !== 'error') {
+      return result.definition;
     }
   }
   catch (error) {
@@ -37,7 +57,7 @@ async function postGenerateWord(asId: string, word: string) {
 }
 
 const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
-  const { asId } = useGlobalSetting();
+  const { asId } = useGlobalSettings();
   const { create, update } = useWordDataContext()
   const [word, setWord] = useState(mode === 'create' ? '' : data?.word);
   const [decription, setDescription] = useState(mode === 'create' ? '' : data?.description);
@@ -70,6 +90,14 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showSuggestions]);
 
+
+  const handleGenerateDefenition = async () => {
+    if (!asId || !word) return;
+    setIsGenerating(true);
+    const definition = await postGenerateDefinition(asId, word);
+    if (definition) setDescription(definition);
+    setIsGenerating(false);
+  }
 
   const handleGenerateInstance = async () => {
     if (!asId || !word) return;
@@ -156,24 +184,33 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
             </div>
           </div>
           <div>
-            <div className="subtitle">Description</div>
+            <div className="subtitle" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span>Description</span>
+              <button
+                disabled={isGenerating}
+                style={{background: "transparent", color: "#fff", fontSize: "16px", border: 0}}
+                onClick={handleGenerateDefenition}
+              >
+                { isGenerating ? '⧗' : '✦'}
+              </button>
+            </div>
             <div className="input-container">
               <input type="text" className="input" value={decription} onChange={e => setDescription(e.target.value)} />
             </div>
           </div>
           <div>
-            <div className="subtitle">
-              Sentence
+            <div className="subtitle" style={{ display: 'flex', fontSize: "16px", alignItems: 'center', gap: '4px' }}>
+              <span>Sentence</span>
               <button
                 disabled={isGenerating}
-                style={{background: "transparent", color: "#fff", border: 0}}
+                style={{background: "transparent", color: "#fff", fontSize: "16px", border: 0}}
                 onClick={handleGenerateInstance}
               >
-                { isGenerating ? 'Generating' : '✦'}
+                { isGenerating ? '⧗' : '✦'}
               </button>
             </div>
-            <div className="input-container">
-              <input disabled={isGenerating} type="text" className="input" value={instance} onChange={e => setInstance(e.target.value)} />
+            <div className="input-container large">
+              <textarea disabled={isGenerating} rows={2} className="input" value={instance} onChange={e => setInstance(e.target.value)} />
             </div>
           </div>
           <div>

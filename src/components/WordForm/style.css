@@ -23,9 +23,12 @@
 }
 
 .input-container {
-  height: 50px;
+  height: 36px;
   position: relative;
   width: 100%;
+}
+.input-container.large {
+  height: 80px;
 }
 
 .ic1 {
@@ -45,7 +48,7 @@
   font-size: 14px;
   height: 100%;
   outline: 0;
-  padding: 4px 8px;
+  padding: 8px 8px;
   width: 100%;
 }
 
