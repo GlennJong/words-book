@@ -10,7 +10,7 @@ export const useGlobalSettings = () => {
   return context;
 };
 
-export const GlobalSettingsProvider: React.FC<{ asId?: string; children: React.ReactNode }> = ({ asId, children }) => {
+export const GlobalSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const asIdSettings = useAsId();
   const themeSettings = useTheme();
   return (
