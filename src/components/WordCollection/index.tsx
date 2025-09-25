@@ -171,7 +171,7 @@ const WordCollection = () => {
       }}
     >
       { isFetching &&
-        <div style={{ position: 'fixed', bottom: '12px', left: '12px', color: '#fff' }}>
+        <div style={{ position: 'fixed', bottom: '24px', left: '16px', color: '#fff' }}>
           <LoadingAnimation />
         </div>
       }

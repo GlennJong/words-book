@@ -65,6 +65,8 @@ function Main() {
 const WordInterface = () => {
   const { isFetching, isFetchError, isFetched, refetch } = useWordDataContext();
 
+  console.log({isFetching, isFetchError, isFetched})
+
   return (
     <>
     { isFetched ?

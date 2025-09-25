@@ -45,7 +45,8 @@ export const useWordData = (isDemo: boolean, endpoint?: string, token?: string) 
   const [isFetched, setIsFetched] = useState(false);
   const [isFetchError, setIsFetchError] = useState(false);
 
-  const isEnabled = endpoint && token;
+  // TODO: demo mode
+  const isEnabled = endpoint && token || isDemo;
 
   useEffect(() => {
     if (isEnabled) get();
@@ -85,22 +86,23 @@ export const useWordData = (isDemo: boolean, endpoint?: string, token?: string) 
   };
 
   const get = async () => {
-    if (isEnabled) {
-      setIsFetching(true);
-      // TODO: demo mode
-      const wordList = isDemo ?
-        await getMockWordListData(1000)
-        :
-        await getWordData(endpoint, token) ?? [];
-      if (wordList.length > 0) {
-        setData(wordList);
-        setShuffledIndexes(shuffleIndexes(wordList.length));
-        setIsFetched(true);
-      } else {
-        setIsFetchError(true);
-      }
-      setIsFetching(false);
+    setIsFetching(true);
+    // TODO: demo mode
+    const wordList = isDemo ?
+      await getMockWordListData(1000)
+      :
+      await getWordData(endpoint, token) ?? [];
+
+      console.log({wordList})
+      
+    if (wordList.length > 0) {
+      setData(wordList);
+      setShuffledIndexes(shuffleIndexes(wordList.length));
+      setIsFetched(true);
+    } else {
+      setIsFetchError(true);
     }
+    setIsFetching(false);
   };
 
   const create = (word: WordData) => {
