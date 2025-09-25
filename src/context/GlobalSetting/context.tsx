@@ -3,7 +3,12 @@ import { ThemeHook, useTheme } from './theme';
 import { EndpointHook, useEndpoint } from './endpoint';
 import { TokenHook, useToken } from './token';
 
-export const GlobalSettings = createContext<ThemeHook & EndpointHook & TokenHook | null>(null);
+// const isDemo = import.meta.env.VITE_IS_DEMO;
+const isDemo = true;
+
+type GlobalSettingsType = ThemeHook & EndpointHook & TokenHook & { isDemo: boolean };
+
+export const GlobalSettings = createContext<GlobalSettingsType | null>(null);
 
 export const useGlobalSettings = () => {
   const context = useContext(GlobalSettings);
@@ -18,6 +23,7 @@ export const GlobalSettingsProvider: React.FC<{ children: React.ReactNode }> = (
   return (
     <GlobalSettings.Provider
       value={{
+        isDemo,
         ...themeSettings,
         ...endpointSettings,
         ...tokenSettings

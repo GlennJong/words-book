@@ -12,8 +12,9 @@ export const useWordDataContext = () => {
 };
 
 export const WordDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { endpoint, token } = useGlobalSettings();
-  const wordData = useWordData(endpoint, token);
+  const { isDemo, endpoint, token } = useGlobalSettings();
+  // TODO: demo mode
+  const wordData = useWordData(isDemo, endpoint, token);
   return (
     <WordDataContext.Provider value={wordData}>
       {children}

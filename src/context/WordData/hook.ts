@@ -1,3 +1,4 @@
+import { getMockWordListData } from "@/mock";
 import { WordData } from "@/pages/MainScreen/type";
 import { getData, postData } from "@/utils/fetch";
 import { useEffect, useState, useRef, useMemo } from "react";
@@ -32,7 +33,7 @@ async function postWordData(method: string, data: WordData[], endpoint?: string,
   }
 }
 
-export const useWordData = (endpoint?: string, token?: string) => {
+export const useWordData = (isDemo: boolean, endpoint?: string, token?: string) => {
   const [isLevelMode, setIsLevelMode] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(0);
   const [data, setData] = useState<WordData[]>([]);
@@ -86,7 +87,11 @@ export const useWordData = (endpoint?: string, token?: string) => {
   const get = async () => {
     if (isEnabled) {
       setIsFetching(true);
-      const wordList = (await getWordData(endpoint, token)) ?? [];
+      // TODO: demo mode
+      const wordList = isDemo ?
+        await getMockWordListData(1000)
+        :
+        await getWordData(endpoint, token) ?? [];
       if (wordList.length > 0) {
         setData(wordList);
         setShuffledIndexes(shuffleIndexes(wordList.length));
@@ -124,20 +129,28 @@ export const useWordData = (endpoint?: string, token?: string) => {
   };
 
   const sendCreate = async (words: WordData[]) => {
+    if (isDemo) return;
     if (isEnabled) await postWordData('create', words, endpoint, token);
   };
   const sendUpdate = async (words: WordData[]) => {
+    if (isDemo) return;
     if (isEnabled) await postWordData('update', words, endpoint, token);
   };
   const sendRemove = async (words: WordData[]) => {
+    if (isDemo) return;
     if (isEnabled) await postWordData('delete', words, endpoint, token);
   };
 
   const resultData = useMemo(() => {
     let result = data;
-    if (isLevelMode) result = result.filter(item => item.level === currentLevel);
-    
-    return shuffledIndexes.map(i => result[i]).filter(item => item !== undefined &&  item.level !== 5);
+    if (isLevelMode) {
+      result = result.filter(item => item.level === currentLevel);
+    }
+    else {
+      result = result.filter(item => item.level !== 5);
+    };
+
+    return shuffledIndexes.map(i => result[i]).filter(item => item !== undefined);
   }, [data, isLevelMode, shuffledIndexes, currentLevel]);
 
   return {

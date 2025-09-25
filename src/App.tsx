@@ -19,7 +19,7 @@ function App() {
 }
 
 const InnerApp = () => {
-  const { endpoint, token } = useGlobalSettings();
+  const { isDemo, endpoint, token } = useGlobalSettings();
   return (
     <div id="App" style={{
       display: 'flex',
@@ -32,7 +32,12 @@ const InnerApp = () => {
       right: 0,
       bottom: 0,
     }}>
-      { (endpoint && token) ? <MainScreen /> : <KeyInputer /> }
+      {/* // TODO: demo mode */}
+      { isDemo ?
+        <MainScreen />
+        :
+        (endpoint && token) ? <MainScreen /> : <KeyInputer />
+      }
     </div>
   );
 }

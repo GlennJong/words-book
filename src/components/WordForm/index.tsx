@@ -6,6 +6,7 @@ import { useWordDataContext } from '@/context/WordData/context';
 import { WordData } from '@/pages/MainScreen/type';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
 import LoadingAnimation from '../LoadingAnimation';
+import { getMockGenDefinition, getMockGenSentence } from '@/mock';
 
 type WordFormProps = {
   mode: 'create' | 'edit';
@@ -64,7 +65,7 @@ async function postGenerateDefinition(word: string, endpoint: string, token: str
 }
 
 const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
-  const { endpoint, token } = useGlobalSettings();
+  const { isDemo, endpoint, token } = useGlobalSettings();
   const { create, update } = useWordDataContext()
   const [word, setWord] = useState(mode === 'create' ? '' : data?.word);
   const [decription, setDescription] = useState(mode === 'create' ? '' : data?.description);
@@ -102,7 +103,11 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
   const handleGenerateDefenition = async () => {
     if (!endpoint || !token || !word) return;
     setIsDefinitionGenerating(true);
-    const result = await postGenerateDefinition(word, endpoint, token);
+    // TODO: demo
+    const result = isDemo ?
+      await getMockGenDefinition(word, 1000)
+      :
+      await postGenerateDefinition(word, endpoint, token);
     if (result) setDescription(result);
     setIsDefinitionGenerating(false);
   }
@@ -110,8 +115,12 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
   const handleGenerateInstance = async () => {
     if (!endpoint || !token || !word) return;
     setIsSentenceGenerating(true);
-    const result = await postGenerateSentence(word, endpoint, token);
-    if (result) setDescription(result);
+    // TODO: demo
+    const result =  isDemo ?
+      await getMockGenSentence(word, 1000)
+      :
+      await postGenerateSentence(word, endpoint, token);
+    if (result) setInstance(result);
     setIsSentenceGenerating(false);
   }
 

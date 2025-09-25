@@ -178,6 +178,21 @@ const WordCollection = () => {
       <div id="Touch" style={{ position: 'relative' }}>
         {/* Front Card */}
         <div style={{ position: 'relative', zIndex: '1' }}>
+          { isCardEmpty &&
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              opacity: "0.6",
+              maxWidth: "65vw",
+              maxHeight: "50vh",
+              width: "300px",
+              height: "450px",
+            }}>
+              No cards in this level.
+            </div>
+          }
           { !isCardEmpty && frontCard &&
             <CardWrapper3D>
               <div ref={cardRef}>
