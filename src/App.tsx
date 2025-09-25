@@ -64,6 +64,7 @@ const KeyInputer = () => {
         onBlur={e => setToken(e.target.value)}
         style={{ padding: '8px' }}
       />
+      {/* <button onClick={() => setIsOffline(true)}>OFFLINE</button> */}
     </div>
   );
 }
