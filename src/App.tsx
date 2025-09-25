@@ -1,22 +1,16 @@
 import MainScreen from './pages/MainScreen';
 import { GlobalSettingsProvider, useGlobalSettings } from './context/GlobalSetting/context';
-import { useEffect } from 'react';
 
-// set --vh to prevent been reset by iOS mobile keyboard
-function useVhFix() {
-  useEffect(() => {
-    function setVh() {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    }
-    setVh();
-    window.addEventListener('resize', setVh);
-    return () => window.removeEventListener('resize', setVh);
-  }, []);
+function setVhVar() {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
 
+setVhVar();
+window.addEventListener('resize', setVhVar);
+window.addEventListener('orientationchange', setVhVar);
+
 function App() {
-  useVhFix();
   return (
     <GlobalSettingsProvider>
       <InnerApp />
@@ -25,32 +19,44 @@ function App() {
 }
 
 const InnerApp = () => {
-  const { asId } = useGlobalSettings();
+  const { endpoint, token } = useGlobalSettings();
   return (
     <div id="App" style={{
       display: 'flex',
       height: 'calc(var(--vh, 1vh) * 100)',
       width: '100vw',
       overflow: 'hidden',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
     }}>
-      { asId ? <MainScreen /> : <IdInputer /> }
+      { (endpoint && token) ? <MainScreen /> : <KeyInputer /> }
     </div>
   );
 }
 
-const IdInputer = () => {
-  const { setAsId } = useGlobalSettings();
+const KeyInputer = () => {
+  const { setEndpoint, setToken } = useGlobalSettings();
   return (
     <div className="pattern_3" style={{
       display: 'flex',
+      flexDirection: 'column',
+      gap: '12px',
       alignItems: 'center',
       justifyContent: 'center',
       height: '100%',
       width: '100%',
     }}>
       <input
-        placeholder="Input your id"
-        onBlur={e => setAsId(e.target.value)}
+        placeholder="Input Endpoint"
+        onBlur={e => setEndpoint(e.target.value)}
+        style={{ padding: '8px' }}
+      />
+      <input
+        placeholder="Input Token"
+        onBlur={e => setToken(e.target.value)}
         style={{ padding: '8px' }}
       />
     </div>

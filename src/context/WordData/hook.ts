@@ -2,26 +2,37 @@ import { WordData } from "@/pages/MainScreen/type";
 import { getData, postData } from "@/utils/fetch";
 import { useEffect, useState, useRef, useMemo } from "react";
 
-const SEND_INTERVAL = 10 * 1000;
+const SEND_DEBOUNCE = 12 * 1000; // 12 seconds
 
-async function getWordData(asId: string) {
+async function getWordData(endpoint?: string, token?: string) {
   try {
-    return await getData<WordData[]>(`https://script.google.com/macros/s/${asId}/exec`);
-  }
-  catch (error) {
-    console.error(error);
-  }
-}
-async function postWordData(asId: string, method: string, data: WordData[]) {
-  try {
-    await postData(`https://script.google.com/macros/s/${asId}/exec`, {method, data})
-  }
-  catch (error) {
+    const url = `${endpoint}` +
+      `?token=${token}` +
+      `&t=${Date.now().toString()}`;
+
+    if (token) {
+      return await getData<WordData[]>(url);
+    }
+  } catch (error) {
     console.error(error);
   }
 }
 
-export const useWordData = (asId?: string) => {
+async function postWordData(method: string, data: WordData[], endpoint?: string, token?: string) {
+  try {
+    const url = `${endpoint}` +
+      `?token=${token}` +
+      `&t=${Date.now().toString()}`;
+
+    if (token) {
+      await postData(url, { method, data });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const useWordData = (endpoint?: string, token?: string) => {
   const [isLevelMode, setIsLevelMode] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(0);
   const [data, setData] = useState<WordData[]>([]);
@@ -33,13 +44,18 @@ export const useWordData = (asId?: string) => {
   const [isFetched, setIsFetched] = useState(false);
   const [isFetchError, setIsFetchError] = useState(false);
 
+  const isEnabled = endpoint && token;
+
   useEffect(() => {
-  if (asId) get()
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [asId]);
-  
-  useEffect(() => {
-    const timer = setInterval(() => {
+    if (isEnabled) get();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEnabled]);
+
+  const debounceTimer = useRef<number | null>(null);
+
+  const triggerDebounce = () => {
+  if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = window.setTimeout(() => {
       if (
         pendingCreateRef.current.length > 0 ||
         pendingUpdateRef.current.length > 0 ||
@@ -47,64 +63,54 @@ export const useWordData = (asId?: string) => {
       ) {
         submitPending();
       }
-    }, SEND_INTERVAL);
-    return () => clearInterval(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 只在 mount/unmount 時設置 timer
+    }, SEND_DEBOUNCE);
+  };
 
   const submitPending = async () => {
-    console.log('submitPending: start');
     setIsFetching(true);
     if (pendingCreateRef.current.length > 0) {
       await sendCreate(pendingCreateRef.current);
-      console.log('setPendingCreate: []');
       pendingCreateRef.current = [];
     }
     if (pendingUpdateRef.current.length > 0) {
       await sendUpdate(pendingUpdateRef.current);
-      console.log('setPendingUpdate: []');
       pendingUpdateRef.current = [];
     }
     if (pendingRemoveRef.current.length > 0) {
       await sendRemove(pendingRemoveRef.current);
-      console.log('setPendingRemove: []');
       pendingRemoveRef.current = [];
     }
     setIsFetching(false);
-    console.log('submitPending: end');
   };
 
   const get = async () => {
-    if (asId){
+    if (isEnabled) {
       setIsFetching(true);
-      const wordList = (await getWordData(asId)) ?? [];
+      const wordList = (await getWordData(endpoint, token)) ?? [];
       if (wordList.length > 0) {
         setData(wordList);
         setShuffledIndexes(shuffleIndexes(wordList.length));
         setIsFetched(true);
-      }
-      else {
+      } else {
         setIsFetchError(true);
       }
       setIsFetching(false);
     }
-  }
+  };
 
   const create = (word: WordData) => {
-    console.log('setPendingCreate: +1');
     pendingCreateRef.current = [...pendingCreateRef.current, word];
+    triggerDebounce();
   };
   const update = (word: WordData) => {
-    console.log('setPendingUpdate: +1');
     pendingUpdateRef.current = [...pendingUpdateRef.current, word];
-    console.log('setData: update', word.id);
     setData(prev => prev.map(item => item.id === word.id ? { ...item, ...word } : item));
+    triggerDebounce();
   };
   const remove = (word: WordData) => {
-    console.log('setPendingRemove: +1');
     pendingRemoveRef.current = [...pendingRemoveRef.current, word];
-    console.log('setData: remove', word.id);
     setData(prev => prev.filter(item => item.id !== word.id));
+    triggerDebounce();
   };
 
   // shuffle index array
@@ -118,20 +124,20 @@ export const useWordData = (asId?: string) => {
   };
 
   const sendCreate = async (words: WordData[]) => {
-    if (asId) await postWordData(asId, 'create', words);
+    if (isEnabled) await postWordData('create', words, endpoint, token);
   };
   const sendUpdate = async (words: WordData[]) => {
-    if (asId) await postWordData(asId, 'update', words);
+    if (isEnabled) await postWordData('update', words, endpoint, token);
   };
   const sendRemove = async (words: WordData[]) => {
-    if (asId) await postWordData(asId, 'delete', words);
+    if (isEnabled) await postWordData('delete', words, endpoint, token);
   };
 
   const resultData = useMemo(() => {
     let result = data;
     if (isLevelMode) result = result.filter(item => item.level === currentLevel);
     
-    return shuffledIndexes.map(i => result[i]).filter(item => item !== undefined);
+    return shuffledIndexes.map(i => result[i]).filter(item => item !== undefined &&  item.level !== 5);
   }, [data, isLevelMode, shuffledIndexes, currentLevel]);
 
   return {

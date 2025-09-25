@@ -1,8 +1,9 @@
 import React, { createContext, useContext } from 'react';
-import { useAsId, AsIdHook } from './asId';
 import { ThemeHook, useTheme } from './theme';
+import { EndpointHook, useEndpoint } from './endpoint';
+import { TokenHook, useToken } from './token';
 
-export const GlobalSettings = createContext<AsIdHook & ThemeHook | null>(null);
+export const GlobalSettings = createContext<ThemeHook & EndpointHook & TokenHook | null>(null);
 
 export const useGlobalSettings = () => {
   const context = useContext(GlobalSettings);
@@ -11,10 +12,16 @@ export const useGlobalSettings = () => {
 };
 
 export const GlobalSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const asIdSettings = useAsId();
+  const endpointSettings = useEndpoint();
+  const tokenSettings = useToken();
   const themeSettings = useTheme();
   return (
-    <GlobalSettings.Provider value={{...asIdSettings, ...themeSettings}}>
+    <GlobalSettings.Provider
+      value={{
+        ...themeSettings,
+        ...endpointSettings,
+        ...tokenSettings
+      }}>
       {children}
     </GlobalSettings.Provider>
   );

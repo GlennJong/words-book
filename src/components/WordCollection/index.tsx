@@ -5,6 +5,7 @@ import useTouch from './useTouch';
 import FullScreenPanel from '../FullScreenPanel';
 import WordForm from '../WordForm';
 import { useWordDataContext } from '@/context/WordData/context';
+import LoadingAnimation from '../LoadingAnimation';
 
 const ACTIVE_X = 100;
 const ACTIVE_Y = 100;
@@ -72,7 +73,7 @@ function cardAutoMoveoutStyleHandler(time: number = 300, direction: 'left' | 'ri
 }
 
 const WordCollection = () => {
-  const { data, isLevelMode, setIsLevelMode, upperLevel, level, suffle } = useWordDataContext();
+  const { isFetching, data, isLevelMode, setIsLevelMode, upperLevel, level, suffle } = useWordDataContext();
   const [ curIndex, setCurIndex ] = useState(0);
   const curIndexRef = useRef<number>(0);
 
@@ -90,7 +91,6 @@ const WordCollection = () => {
   const { update: updateWord } = useWordDataContext();
   
   const handleGoToNextCard = useCallback(() => {
-    // 使用 setCurIndex callback 形式，確保 curIndexRef 與 curIndex 同步
     setCurIndex(prev => {
       let next = prev + 1;
       if (next >= data.length) next = 0;
@@ -158,8 +158,6 @@ const WordCollection = () => {
   const frontCard = data[curIndex];
   const isCardEmpty = data.length === 0;
 
-  console.log({data, frontCard, backCard});
-  
   return (
     <div style={{
         display: 'flex',
@@ -172,6 +170,11 @@ const WordCollection = () => {
         overflow: 'hidden'
       }}
     >
+      { isFetching &&
+        <div style={{ position: 'fixed', bottom: '12px', left: '12px', color: '#fff' }}>
+          <LoadingAnimation />
+        </div>
+      }
       <div id="Touch" style={{ position: 'relative' }}>
         {/* Front Card */}
         <div style={{ position: 'relative', zIndex: '1' }}>

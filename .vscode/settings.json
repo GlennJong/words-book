@@ -1,0 +1,6 @@
+{
+  "search.exclude": {
+    "public/corpus": true,
+    "corpus/*.txt": true
+  }
+}

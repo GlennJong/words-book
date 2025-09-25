@@ -6,10 +6,10 @@ import { useGlobalSettings } from '@/context/GlobalSetting/context';
 import './backgrounds.css';
 
 function Main() {
-  const { asId, setAsId } = useGlobalSettings();
+  const { setEndpoint, setToken } = useGlobalSettings();
   
   return (
-    <WordDataProvider asId={asId}>
+    <WordDataProvider>
       <div className="pattern_3" style={{
         display: 'flex',
         height: '100%',
@@ -28,7 +28,10 @@ function Main() {
               border: '0',
               boxSizing: 'border-box',
             }}
-            onClick={() => setAsId(undefined)}
+            onClick={() => {
+              setEndpoint(undefined)
+              setToken(undefined)
+            }}
           >
             ⏎
           </button>

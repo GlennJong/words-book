@@ -1,6 +1,6 @@
 /* HTML: <div class="loader"></div> */
 .loading-animation {
-  width: 40px;
+  width: 24px;
   aspect-ratio: 6;
   --_g: no-repeat radial-gradient(circle closest-side,white 90%,transparent);
   background: 

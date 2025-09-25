@@ -1,10 +1,11 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { getData, postData } from '@/utils/fetch';
 import './style.css';
 import { useWordDataContext } from '@/context/WordData/context';
 import { WordData } from '@/pages/MainScreen/type';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
+import LoadingAnimation from '../LoadingAnimation';
 
 type WordFormProps = {
   mode: 'create' | 'edit';
@@ -12,25 +13,27 @@ type WordFormProps = {
   onConfirm: () => void;
 }
 
-
 type GenerateWordResponse = {
   status: string;
   message: string;
-  sentence?: string;
-  definition?: string;
+  data: string;
 };
 
-async function postGenerateWord(asId: string, word: string) {
+async function postGenerateSentence(word: string, endpoint: string, token: string) {
   try {
+    const url = `${endpoint}` +
+      `?token=${token}` +
+      `&t=${Date.now().toString()}`;
+    
     const result = await postData(
-      `https://script.google.com/macros/s/${asId}/exec`,
+      url,
       {
-        method: 'generate-sentence',
+        action: 'gen-ins',
         data: [word]
       }
     ) as unknown as GenerateWordResponse;
     if (result && result.status !== 'error') {
-      return result.sentence;
+      return result.data;
     }
   }
   catch (error) {
@@ -38,17 +41,21 @@ async function postGenerateWord(asId: string, word: string) {
   }
 }
 
-async function postGenerateDefinition(asId: string, word: string) {
+async function postGenerateDefinition(word: string, endpoint: string, token: string) {
   try {
+    const url = `${endpoint}` +
+      `?token=${token}` +
+      `&t=${Date.now().toString()}`;
+
     const result = await postData(
-      `https://script.google.com/macros/s/${asId}/exec`,
+      url,
       {
-        method: 'generate-definition',
+        action: 'gen-def',
         data: [word]
       }
     ) as unknown as GenerateWordResponse;
     if (result && result.status !== 'error') {
-      return result.definition;
+      return result.data;
     }
   }
   catch (error) {
@@ -57,7 +64,7 @@ async function postGenerateDefinition(asId: string, word: string) {
 }
 
 const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
-  const { asId } = useGlobalSettings();
+  const { endpoint, token } = useGlobalSettings();
   const { create, update } = useWordDataContext()
   const [word, setWord] = useState(mode === 'create' ? '' : data?.word);
   const [decription, setDescription] = useState(mode === 'create' ? '' : data?.description);
@@ -67,13 +74,14 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
   const [suggestions, setSuggestions]   = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSentenceGenerating, setIsSentenceGenerating] = useState(false);
+  const [isDefinitionGenerating, setIsDefinitionGenerating] = useState(false);
   
   const loadedDict = useRef<{ [key: string]: string[] }>({});
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!showSuggestions) return;
     const handleClick = (e: MouseEvent) => {
       const inputEl = inputRef.current;
@@ -92,19 +100,19 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
 
 
   const handleGenerateDefenition = async () => {
-    if (!asId || !word) return;
-    setIsGenerating(true);
-    const definition = await postGenerateDefinition(asId, word);
-    if (definition) setDescription(definition);
-    setIsGenerating(false);
+    if (!endpoint || !token || !word) return;
+    setIsDefinitionGenerating(true);
+    const result = await postGenerateDefinition(word, endpoint, token);
+    if (result) setDescription(result);
+    setIsDefinitionGenerating(false);
   }
 
   const handleGenerateInstance = async () => {
-    if (!asId || !word) return;
-    setIsGenerating(true);
-    const instance = await postGenerateWord(asId, word);
-    if (instance) setInstance(instance);
-    setIsGenerating(false);
+    if (!endpoint || !token || !word) return;
+    setIsSentenceGenerating(true);
+    const result = await postGenerateSentence(word, endpoint, token);
+    if (result) setDescription(result);
+    setIsSentenceGenerating(false);
   }
 
   const handleWordChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,6 +165,8 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
     onConfirm();
   }
 
+  const isGenerating = isSentenceGenerating || isDefinitionGenerating;
+
   return (
     <div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -169,6 +179,7 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
                 type="text"
                 className="input"
                 value={word}
+                onFocus={() => setShowSuggestions(true)}
                 onChange={handleWordChange}
                 autoComplete="off"
               />
@@ -191,7 +202,7 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
                 style={{background: "transparent", color: "#fff", fontSize: "16px", border: 0}}
                 onClick={handleGenerateDefenition}
               >
-                { isGenerating ? '⧗' : '✦'}
+                { isDefinitionGenerating ? <LoadingAnimation /> : '✦'}
               </button>
             </div>
             <div className="input-container">
@@ -206,7 +217,7 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
                 style={{background: "transparent", color: "#fff", fontSize: "16px", border: 0}}
                 onClick={handleGenerateInstance}
               >
-                { isGenerating ? '⧗' : '✦'}
+                { isSentenceGenerating ? <LoadingAnimation /> : '✦'}
               </button>
             </div>
             <div className="input-container large">

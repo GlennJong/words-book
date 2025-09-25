@@ -1,5 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { useWordData } from './hook';
+import { useGlobalSettings } from '../GlobalSetting/context';
 
 // WordDataContext 型別可根據 useWordData 回傳內容自動推斷
 export const WordDataContext = createContext<ReturnType<typeof useWordData> | null>(null);
@@ -10,8 +11,9 @@ export const useWordDataContext = () => {
   return context;
 };
 
-export const WordDataProvider: React.FC<{ asId?: string; children: React.ReactNode }> = ({ asId, children }) => {
-  const wordData = useWordData(asId);
+export const WordDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { endpoint, token } = useGlobalSettings();
+  const wordData = useWordData(endpoint, token);
   return (
     <WordDataContext.Provider value={wordData}>
       {children}
