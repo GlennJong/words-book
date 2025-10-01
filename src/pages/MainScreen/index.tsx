@@ -6,7 +6,7 @@ import { useGlobalSettings } from '@/context/GlobalSetting/context';
 import './backgrounds.css';
 
 function Main() {
-  const { setEndpoint, setToken } = useGlobalSettings();
+  const { setEndpoint, setToken, setIsOffline } = useGlobalSettings();
   
   return (
     <WordDataProvider>
@@ -31,6 +31,7 @@ function Main() {
             onClick={() => {
               setEndpoint(undefined)
               setToken(undefined)
+              setIsOffline(false)
             }}
           >
             ⏎
@@ -64,8 +65,6 @@ function Main() {
 
 const WordInterface = () => {
   const { isFetching, isFetchError, isFetched, refetch } = useWordDataContext();
-
-  console.log({isFetching, isFetchError, isFetched})
 
   return (
     <>

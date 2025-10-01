@@ -1,5 +1,6 @@
 import MainScreen from './pages/MainScreen';
 import { GlobalSettingsProvider, useGlobalSettings } from './context/GlobalSetting/context';
+import { useState } from 'react';
 
 function setVhVar() {
   const vh = window.innerHeight * 0.01;
@@ -19,7 +20,7 @@ function App() {
 }
 
 const InnerApp = () => {
-  const { isDemo, endpoint, token } = useGlobalSettings();
+  const { isDemo, isOffline, endpoint, token } = useGlobalSettings();
   return (
     <div id="App" style={{
       display: 'flex',
@@ -33,7 +34,7 @@ const InnerApp = () => {
       bottom: 0,
     }}>
       {/* // TODO: demo mode */}
-      { isDemo ?
+      { (isDemo || isOffline) ?
         <MainScreen />
         :
         (endpoint && token) ? <MainScreen /> : <KeyInputer />
@@ -43,7 +44,10 @@ const InnerApp = () => {
 }
 
 const KeyInputer = () => {
-  const { setEndpoint, setToken } = useGlobalSettings();
+  const { setEndpoint, setToken, setIsOffline } = useGlobalSettings();
+  const [ endpointInput, setEndpointInput ] = useState<string>('');
+  const [ tokenInput, setTokenInput ] = useState<string>('');
+  
   return (
     <div className="pattern_3" style={{
       display: 'flex',
@@ -56,15 +60,29 @@ const KeyInputer = () => {
     }}>
       <input
         placeholder="Input Endpoint"
-        onBlur={e => setEndpoint(e.target.value)}
+        value={endpointInput}
+        onChange={e => setEndpointInput(e.target.value)}
         style={{ padding: '8px' }}
       />
       <input
         placeholder="Input Token"
-        onBlur={e => setToken(e.target.value)}
+        value={tokenInput}
+        onChange={e => setTokenInput(e.target.value)}
         style={{ padding: '8px' }}
       />
-      {/* <button onClick={() => setIsOffline(true)}>OFFLINE</button> */}
+      
+      <div style={{ display: 'flex', gap: '12px' }}>
+        <button className='fancy-button' onClick={() => {
+          setEndpoint(endpointInput)
+          setToken(tokenInput)
+          setIsOffline(false)
+        }}>
+          START
+        </button>
+        <button className='fancy-button' onClick={() => setIsOffline(true)}>
+          OFFLINE
+        </button>
+      </div>
     </div>
   );
 }

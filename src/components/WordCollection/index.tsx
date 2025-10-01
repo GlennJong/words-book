@@ -6,6 +6,7 @@ import FullScreenPanel from '../FullScreenPanel';
 import WordForm from '../WordForm';
 import { useWordDataContext } from '@/context/WordData/context';
 import LoadingAnimation from '../LoadingAnimation';
+import { useGlobalSettings } from '@/context/GlobalSetting/context';
 
 const ACTIVE_X = 100;
 const ACTIVE_Y = 100;
@@ -73,6 +74,7 @@ function cardAutoMoveoutStyleHandler(time: number = 300, direction: 'left' | 'ri
 }
 
 const WordCollection = () => {
+  const { isOffline } = useGlobalSettings();
   const { isFetching, data, isLevelMode, setIsLevelMode, upperLevel, level, suffle } = useWordDataContext();
   const [ curIndex, setCurIndex ] = useState(0);
   const curIndexRef = useRef<number>(0);
@@ -170,6 +172,11 @@ const WordCollection = () => {
         overflow: 'hidden'
       }}
     >
+      { isOffline &&
+        <div style={{ position: 'fixed', bottom: '24px', left: '16px', color: '#fff' }}>
+          offline
+        </div>
+      }
       { isFetching &&
         <div style={{ position: 'fixed', bottom: '24px', left: '16px', color: '#fff' }}>
           <LoadingAnimation />
@@ -228,27 +235,31 @@ const WordCollection = () => {
         }
       </div>
       <div style={{ display: "flex", gap: "10px" }}>
-        <FancyButton
-          onClick={() => {
-            handleCardDowngrade();
-            handleMoveToNextButton('left');
-          }}
-        >
-          Downgrade
-        </FancyButton>
+        { !isOffline &&
+          <FancyButton
+            onClick={() => {
+              handleCardDowngrade();
+              handleMoveToNextButton('left');
+            }}
+          >
+            Downgrade
+          </FancyButton>
+        }
         <FancyButton
           onClick={() => handleMoveToNextButton()}
         >
           Pass
         </FancyButton>
-        <FancyButton
-          onClick={() => {
-            handleCardUpgrade();
-            handleMoveToNextButton('right');
-          }}
-        >
-          Upgrade
-        </FancyButton>
+        { !isOffline &&
+          <FancyButton
+            onClick={() => {
+              handleCardUpgrade();
+              handleMoveToNextButton('right');
+            }}
+          >
+            Upgrade
+          </FancyButton>
+        }
       </div>
       <div style={{
         position: 'fixed',
@@ -277,16 +288,20 @@ const WordCollection = () => {
         >
           { isLevelMode ? level : 'mix' }
         </FancyRoundButton>
-        <FancyRoundButton
-          onClick={() => setIsCreateNewWordOpen(true)}
-        >
-          +
-        </FancyRoundButton>
-        <FancyRoundButton
-          onClick={() => setIsUpdateWordOpen(true)}
-        >
-          ✎
-        </FancyRoundButton>
+        { !isOffline &&
+          <FancyRoundButton
+            onClick={() => setIsCreateNewWordOpen(true)}
+          >
+            +
+          </FancyRoundButton>
+        }
+        { !isOffline &&
+          <FancyRoundButton
+            onClick={() => setIsUpdateWordOpen(true)}
+          >
+            ✎
+          </FancyRoundButton>
+        }
         <FancyRoundButton
           onClick={() => suffle()}
         >

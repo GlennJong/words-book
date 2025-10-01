@@ -5,6 +5,8 @@ import { useEffect, useState, useRef, useMemo } from "react";
 
 const SEND_DEBOUNCE = 12 * 1000; // 12 seconds
 
+const LOCAL_KEY = 'wordDataCache';
+
 async function getWordData(endpoint?: string, token?: string) {
   try {
     const url = `${endpoint}` +
@@ -33,7 +35,15 @@ async function postWordData(method: string, data: WordData[], endpoint?: string,
   }
 }
 
-export const useWordData = (isDemo: boolean, endpoint?: string, token?: string) => {
+
+type useWordDataProps = {
+  isDemo: boolean,
+  isOffline: boolean,
+  endpoint?: string,
+  token?: string
+}
+
+export const useWordData = ({isDemo, isOffline, endpoint, token}: useWordDataProps) => {
   const [isLevelMode, setIsLevelMode] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(0);
   const [data, setData] = useState<WordData[]>([]);
@@ -49,9 +59,21 @@ export const useWordData = (isDemo: boolean, endpoint?: string, token?: string) 
   const isEnabled = endpoint && token || isDemo;
 
   useEffect(() => {
-    if (isEnabled) get();
+    if (isEnabled && !isOffline) get();
+    if (isOffline) {
+      // 離線時直接從 localStorage 取資料
+      const cached = localStorage.getItem(LOCAL_KEY);
+      if (cached) {
+        const wordList = JSON.parse(cached) as WordData[];
+        setData(wordList);
+        setShuffledIndexes(shuffleIndexes(wordList.length));
+        setIsFetched(true);
+      } else {
+        setIsFetchError(true);
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEnabled]);
+  }, [isEnabled, isOffline]);
 
   const debounceTimer = useRef<number | null>(null);
 
@@ -86,19 +108,19 @@ export const useWordData = (isDemo: boolean, endpoint?: string, token?: string) 
   };
 
   const get = async () => {
+    if (isOffline) return;
     setIsFetching(true);
-    // TODO: demo mode
     const wordList = isDemo ?
       await getMockWordListData(1000)
       :
       await getWordData(endpoint, token) ?? [];
 
-      console.log({wordList})
-      
     if (wordList.length > 0) {
       setData(wordList);
       setShuffledIndexes(shuffleIndexes(wordList.length));
       setIsFetched(true);
+      
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(wordList));
     } else {
       setIsFetchError(true);
     }
@@ -107,16 +129,29 @@ export const useWordData = (isDemo: boolean, endpoint?: string, token?: string) 
 
   const create = (word: WordData) => {
     pendingCreateRef.current = [...pendingCreateRef.current, word];
+    setData(prev => {
+      const newData = [...prev, word];
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(newData));
+      return newData;
+    });
     triggerDebounce();
   };
   const update = (word: WordData) => {
     pendingUpdateRef.current = [...pendingUpdateRef.current, word];
-    setData(prev => prev.map(item => item.id === word.id ? { ...item, ...word } : item));
+    setData(prev => {
+      const newData = prev.map(item => item.id === word.id ? { ...item, ...word } : item);
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(newData));
+      return newData;
+    });
     triggerDebounce();
   };
   const remove = (word: WordData) => {
     pendingRemoveRef.current = [...pendingRemoveRef.current, word];
-    setData(prev => prev.filter(item => item.id !== word.id));
+    setData(prev => {
+      const newData = prev.filter(item => item.id !== word.id);
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(newData));
+      return newData;
+    });
     triggerDebounce();
   };
 
@@ -131,15 +166,15 @@ export const useWordData = (isDemo: boolean, endpoint?: string, token?: string) 
   };
 
   const sendCreate = async (words: WordData[]) => {
-    if (isDemo) return;
+    if (isDemo || isOffline) return;
     if (isEnabled) await postWordData('create', words, endpoint, token);
   };
   const sendUpdate = async (words: WordData[]) => {
-    if (isDemo) return;
+    if (isDemo || isOffline) return;
     if (isEnabled) await postWordData('update', words, endpoint, token);
   };
   const sendRemove = async (words: WordData[]) => {
-    if (isDemo) return;
+    if (isDemo || isOffline) return;
     if (isEnabled) await postWordData('delete', words, endpoint, token);
   };
 
