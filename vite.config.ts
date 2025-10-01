@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
+  const isDev = mode === 'dev';
   const isDemo = mode === 'demo';
   return {
     base: './',
@@ -17,7 +18,8 @@ export default defineConfig(({ mode }) => {
       outDir: isDemo ? 'dist/demo' : 'dist'
     },
     define: {
-      'import.meta.env.VITE_IS_DEMO': JSON.stringify(isDemo)
+      'import.meta.env.VITE_IS_DEMO': JSON.stringify(isDemo),
+      'import.meta.env.VITE_IS_DEV': JSON.stringify(isDev)
     }
   }
 })
