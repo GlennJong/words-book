@@ -1,15 +1,8 @@
 import MainScreen from './pages/MainScreen';
 import { GlobalSettingsProvider, useGlobalSettings } from './context/GlobalSetting/context';
 import { useState } from 'react';
-
-function setVhVar() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
-
-setVhVar();
-window.addEventListener('resize', setVhVar);
-window.addEventListener('orientationchange', setVhVar);
+import Wrapper from './Wrapper';
+import Background from './components/Background';
 
 function App() {
   return (
@@ -22,34 +15,29 @@ function App() {
 const InnerApp = () => {
   const { isDemo, isOffline, endpoint, token } = useGlobalSettings();
   return (
-    <div id="App" style={{
-      display: 'flex',
-      height: 'calc(var(--vh, 1vh) * 100)',
-      width: '100vw',
-      overflow: 'hidden',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    }}>
-      {/* // TODO: demo mode */}
-      { (isDemo || isOffline) ?
-        <MainScreen />
-        :
-        (endpoint && token) ? <MainScreen /> : <KeyInputer />
-      }
-    </div>
+    <Wrapper id="App">
+      <>
+        <Background />
+        {/* // TODO: demo mode */}
+        { (isDemo || isOffline) ?
+          <MainScreen />
+          :
+          (endpoint && token) ? <MainScreen /> : <KeyInputer />
+        }
+      </>
+    </Wrapper>
   );
 }
 
 const KeyInputer = () => {
-  const { setEndpoint, setToken, setIsOffline } = useGlobalSettings();
-  const [ endpointInput, setEndpointInput ] = useState<string>('');
-  const [ tokenInput, setTokenInput ] = useState<string>('');
+  const { setEndpoint, endpoint, token, setToken, setIsOffline } = useGlobalSettings();
+  const [ endpointInput, setEndpointInput ] = useState<string>(endpoint || '');
+  const [ tokenInput, setTokenInput ] = useState<string>(token || '');
+
+  console.log({endpoint, token});
   
   return (
-    <div className="pattern_3" style={{
+    <div style={{
       display: 'flex',
       flexDirection: 'column',
       gap: '12px',
@@ -59,16 +47,18 @@ const KeyInputer = () => {
       width: '100%',
     }}>
       <input
+        id="endpoint"
         placeholder="Input Endpoint"
         value={endpointInput}
         onChange={e => setEndpointInput(e.target.value)}
-        style={{ padding: '8px' }}
+        style={{ padding: '8px', zIndex: 1 }}
       />
       <input
+        id="token"
         placeholder="Input Token"
         value={tokenInput}
         onChange={e => setTokenInput(e.target.value)}
-        style={{ padding: '8px' }}
+        style={{ padding: '8px', zIndex: 1}}
       />
       
       <div style={{ display: 'flex', gap: '12px' }}>

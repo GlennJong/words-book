@@ -21,14 +21,14 @@ async function getWordData(endpoint?: string, token?: string) {
   }
 }
 
-async function postWordData(method: string, data: WordData[], endpoint?: string, token?: string) {
+async function postWordData(action: string, data: WordData[], endpoint?: string, token?: string) {
   try {
     const url = `${endpoint}` +
       `?token=${token}` +
       `&t=${Date.now().toString()}`;
 
     if (token) {
-      await postData(url, { method, data });
+      await postData(url, { action, data });
     }
   } catch (error) {
     console.error(error);

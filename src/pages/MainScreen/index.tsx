@@ -3,14 +3,13 @@ import LoadingAnimation from '@/components/LoadingAnimation';
 import { Book } from '../../components/Icons/index';
 import { useWordDataContext, WordDataProvider } from '@/context/WordData/context';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
-import './backgrounds.css';
 
 function Main() {
   const { setEndpoint, setToken, setIsOffline } = useGlobalSettings();
   
   return (
     <WordDataProvider>
-      <div className="pattern_3" style={{
+      <div style={{
         display: 'flex',
         height: '100%',
         width: '100%',
@@ -36,8 +35,6 @@ function Main() {
           >
             ⏎
           </button>
-          {/* <FullScreenPanel open={isPanelShow} setOpen={setIsPanelShow}>
-          </FullScreenPanel> */}
 
           {/* Menu button */}
           {/* mini asturnout */}

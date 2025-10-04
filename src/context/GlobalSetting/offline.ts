@@ -6,7 +6,7 @@ export type OfflineHook = {
 };
 
 export const useOffline = (): OfflineHook => {
-  const [isOffline, setIsOffline] = useState<boolean>(true);
+  const [isOffline, setIsOffline] = useState<boolean>(false);
   
   return {
     isOffline,
