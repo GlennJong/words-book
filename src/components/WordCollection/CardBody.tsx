@@ -4,7 +4,11 @@ import { Book } from '@/components/Icons';
 
 const wordcardBackground = {
   example: {
-    background: 'radial-gradient(circle,rgba(49, 109, 135, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%)',
+    // background: 'radial-gradient(circle,rgba(49, 109, 135, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%)',
+    backgroundImage: `url('./images/card_1.svg')`,
+    backgroundPosition: '50% 50%',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
   },
   mountain: {
     backgroundImage: `url('/images/mountain.jpg')`,
@@ -48,7 +52,7 @@ const CARDSIZE = {
 
 const CardBody = ({ word, description, instance, translation, level }: CardBodyProps) => {
   return (
-    <div className="card" style={{ maxWidth: '65vw', maxHeight: '50vh', ...CARDSIZE, ...wordcardBackground['pattern_2'] }}>
+    <div className="card" style={{ maxWidth: '65vw', maxHeight: '50vh', ...CARDSIZE, ...wordcardBackground['example'] }}>
       <div className="inner">
         <div
           className="level"
