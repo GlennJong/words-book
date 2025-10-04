@@ -3,65 +3,71 @@
   margin: auto;
   overflow: hidden;
 }
+
 .card > .inner {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  padding: 36px 24px;
+  box-sizing: border-box;
 }
 
 .card > .inner > .level {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Roboto';
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  font-family: 'Caprasimo';
+  text-align: right;
   color: #fff;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  width: 100%;
+  padding: 0 12px;
+  box-sizing: border-box;
 }
-.card > .inner > .title {
-  margin: 12px;
-  font-family: 'Roboto';
-  font-weight: 600;
-  font-size: 24px;
-  color: white;
-  text-align: center;
+
+.card > .inner > .level:before {
+  content: "";
+  width: 60%;
+  height: 0.5px;
+  background: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+}
+
+.card > .inner > .word {
+  font-family: 'Caprasimo';
+  font-size: 30px;
+  color: invert(var(--word-color, #fff));
+  filter: invert(1) drop-shadow(0 0 2px #0008);
 }
 
 .extra {
-  display: flex;
-  align-items: center;
-  margin: 12px;
+  margin-top: 12px;
   font-family: 'Roboto Condensed';
   font-weight: 600;
-  font-size: 16px;
+  font-size: 13px;
   white-space: break-spaces;
-  color: white;
-  max-width: 80%;
-  min-height: 48px;
+  color: invert(var(--word-color, #fff));
+  filter: invert(1) drop-shadow(0 0 2px #0008);
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
 }
 
 .extra button {
   display: flex;
-  align-items: center;
+  /* margin: 0 auto; */
   border: 0;
-  padding: 12px 18px;
-  font-size: 18px;
-  height: 48px;
-  background: hsla(0, 0%, 0%, .1);
-  color: #DAFFFB;
+  font-size: 14px;
+  padding: 8px 12px;
+  background-color: hsla(0, 0%, 0%, 100%, .1);
+  opacity: 0.3;
+  color: #000;
   font-family: 'Roboto Condensed';
 }
 .extra button > svg {
   margin-right: 4px;
-  width: 18px;
+  width: 16px;
   height: auto;
 }
 

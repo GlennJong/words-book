@@ -3,6 +3,49 @@ import './style.css';
 import { Book } from '@/components/Icons';
 
 const wordcardBackground = {
+  level_1: {
+    backgroundColor: '#28525B',
+    backgroundImage: `url('./images/card_1.svg')`,
+    backgroundPosition: '50% 50%',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '101% auto',
+  },
+  level_2: {
+    backgroundColor: '#2d295b',
+    backgroundImage: `url('./images/card_2.svg')`,
+    backgroundPosition: '50% 50%',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '101% auto',
+
+  },
+  level_3: {
+    backgroundColor: '#41274C',
+    backgroundImage: `url('./images/card_3.svg')`,
+    backgroundPosition: '50% 50%',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '101% auto',
+  },
+  level_4: {
+    backgroundColor: '#28BBD2',
+    backgroundImage: `url('./images/card_4.svg')`,
+    backgroundPosition: '50% 50%',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '101% auto',
+  },
+  level_5: {
+    backgroundColor: '#2C285B',
+    backgroundImage: `url('./images/card_5.svg')`,
+    backgroundPosition: '50% 50%',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '101% auto',
+  },
+  level_max: {
+    backgroundColor: '#A797FC',
+    backgroundImage: `url('./images/card_max.svg')`,
+    backgroundPosition: '50% 50%',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '101% auto',
+  },
   example: {
     // background: 'radial-gradient(circle,rgba(49, 109, 135, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%)',
     backgroundImage: `url('./images/card_1.svg')`,
@@ -50,23 +93,36 @@ const CARDSIZE = {
   height: '450px',
 }
 
+const levelBackgroundMap: { [key: number]: keyof typeof wordcardBackground } = {
+  0: 'level_1',
+  1: 'level_2',
+  2: 'level_3',
+  3: 'level_4',
+  4: 'level_5',
+  5: 'level_max',
+  // Add more mappings if you have more levels, e.g. 1: 'level_2', etc.
+};
+
 const CardBody = ({ word, description, instance, translation, level }: CardBodyProps) => {
+  const backgroundKey = levelBackgroundMap[level] || 'level_1';
   return (
-    <div className="card" style={{ maxWidth: '65vw', maxHeight: '50vh', ...CARDSIZE, ...wordcardBackground['example'] }}>
+    <div className="card" style={{ maxWidth: '65vw', maxHeight: '50vh', ...CARDSIZE, ...wordcardBackground[backgroundKey] }}>
       <div className="inner">
-        <div
-          className="level"
-          style={{
-            position: 'absolute',
-            left: '12px',
-            top: '12px',
-          }}
-        >
-          { level }
+        <div className="level">
+          { level === 5 ?
+            <span>max</span>
+            :
+            <span>{ level+1 }.</span>
+          }
         </div>
-        <div className="title">{ word }</div>
+        <div
+          className="word"
+          style={{
+            fontSize: word.length > 10 ? '24px' : '30px',
+          }}
+        >{ word }</div>
+        <ExtendExtraContent data={description} title="Description" />
         <Fragment key={word}>
-          <ExtendExtraContent data={description} title="Description" />
           <ExtendExtraContent data={instance} title="Sentence" />
           <ExtendExtraContent data={translation} title="Translation" />
         </Fragment>
