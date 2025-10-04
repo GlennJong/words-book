@@ -34,8 +34,6 @@ const KeyInputer = () => {
   const [ endpointInput, setEndpointInput ] = useState<string>(endpoint || '');
   const [ tokenInput, setTokenInput ] = useState<string>(token || '');
 
-  console.log({endpoint, token});
-  
   return (
     <div style={{
       display: 'flex',
