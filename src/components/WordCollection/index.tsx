@@ -80,6 +80,11 @@ const WordCollection = () => {
   const curIndexRef = useRef<number>(0);
 
   useEffect(() => {
+    setTheme(`level_${level+1}` as "level_1" | "level_2" | "level_3" | "level_4" | "level_5" | "level_6");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [level])
+
+  useEffect(() => {
     if (curIndex >= data.length && data.length > 0) {
       setCurIndex(0);
       curIndexRef.current = 0;
@@ -273,11 +278,7 @@ const WordCollection = () => {
         { isLevelMode &&
           <FancyRoundButton
             onClick={() => {
-              
               upperLevel(level+1);
-              
-              setTheme(`level_${level+1}` as "level_1" | "level_2" | "level_3" | "level_4" | "level_5" | "level_6");
-
               setCurIndex(0);
             }}>
             ⇮
@@ -285,18 +286,12 @@ const WordCollection = () => {
         }
         <FancyRoundButton
           onClick={() => {
-            if (isLevelMode) {
-              setTheme('level_default');
-            }
-            else {
-              setTheme(`level_${level+1}` as "level_1" | "level_2" | "level_3" | "level_4" | "level_5" | "level_6");
-            }
             setIsLevelMode(!isLevelMode);
             setCurIndex(0);
           }}
           style={{fontSize: '12px'}}
         >
-          { isLevelMode ? (level + 1) : 'mix' }
+          { isLevelMode ? (level + 1) > 5 ? 'max': level+1 : 'mix' }
         </FancyRoundButton>
         { !isOffline &&
           <FancyRoundButton

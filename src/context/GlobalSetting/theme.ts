@@ -36,8 +36,8 @@ const themes = {
     colors: ['#2C285B', '#7AE5DA', '#B16A14']
   },
   level_6: {
-    base: '#BDF2C1',
-    colors: ['#BDF2C1', '#A797FC', '#3A35B4']
+    base: '#70ca78',
+    colors: ['#70ca78', '#6954d3', '#3A35B4']
   },
 }
 
