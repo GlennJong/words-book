@@ -34,6 +34,7 @@
 }
 
 .card > .inner > .word {
+  margin-bottom: 12px;
   font-family: 'Caprasimo';
   font-size: 30px;
   color: invert(var(--word-color, #fff));
@@ -41,7 +42,7 @@
 }
 
 .extra {
-  margin-top: 12px;
+  margin-bottom: 6px;
   font-family: 'Roboto Condensed';
   font-weight: 600;
   font-size: 13px;
@@ -49,6 +50,7 @@
   color: invert(var(--word-color, #fff));
   filter: invert(1) drop-shadow(0 0 2px #0008);
   text-align: left;
+  min-height: 32px;
   width: 100%;
   box-sizing: border-box;
   background: transparent;
@@ -56,12 +58,10 @@
 
 .extra button {
   display: flex;
-  /* margin: 0 auto; */
   border: 0;
   font-size: 14px;
   padding: 8px 12px;
-  background-color: hsla(0, 0%, 0%, 100%, .1);
-  opacity: 0.3;
+  background-color: hsla(0, 0%, 100%, .2);
   color: #000;
   font-family: 'Roboto Condensed';
 }

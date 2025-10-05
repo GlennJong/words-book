@@ -35,23 +35,6 @@ function Main() {
           >
             ⏎
           </button>
-
-          {/* Menu button */}
-          {/* mini asturnout */}
-          {/* create */}
-          {/* update */}
-          {/* mix mode */}
-
-          {/* Level Selector */}
-          {/* Slide up */}
-          {/* Slide down */}
-
-          {/* Updating Animation */}
-
-          {/* Background Parallax */}
-          {/* Level Theme */}
-          {/* Level Transition */}
-
           
         <WordInterface />
       </div>

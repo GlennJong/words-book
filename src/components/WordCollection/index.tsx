@@ -74,7 +74,7 @@ function cardAutoMoveoutStyleHandler(time: number = 300, direction: 'left' | 'ri
 }
 
 const WordCollection = () => {
-  const { isOffline } = useGlobalSettings();
+  const { isOffline, setTheme } = useGlobalSettings();
   const { isFetching, data, isLevelMode, setIsLevelMode, upperLevel, level, suffle } = useWordDataContext();
   const [ curIndex, setCurIndex ] = useState(0);
   const curIndexRef = useRef<number>(0);
@@ -173,7 +173,7 @@ const WordCollection = () => {
       }}
     >
       { isOffline &&
-        <div style={{ position: 'fixed', bottom: '24px', left: '16px', color: '#fff' }}>
+        <div style={{ position: 'fixed', bottom: '24px', left: '16px', color: '#fff', fontSize: '12px' }}>
           offline
         </div>
       }
@@ -273,7 +273,11 @@ const WordCollection = () => {
         { isLevelMode &&
           <FancyRoundButton
             onClick={() => {
+              
               upperLevel(level+1);
+              
+              setTheme(`level_${level+1}` as "level_1" | "level_2" | "level_3" | "level_4" | "level_5" | "level_6");
+
               setCurIndex(0);
             }}>
             ⇮
@@ -281,12 +285,18 @@ const WordCollection = () => {
         }
         <FancyRoundButton
           onClick={() => {
+            if (isLevelMode) {
+              setTheme('level_default');
+            }
+            else {
+              setTheme(`level_${level+1}` as "level_1" | "level_2" | "level_3" | "level_4" | "level_5" | "level_6");
+            }
             setIsLevelMode(!isLevelMode);
             setCurIndex(0);
           }}
           style={{fontSize: '12px'}}
         >
-          { isLevelMode ? level : 'mix' }
+          { isLevelMode ? (level + 1) : 'mix' }
         </FancyRoundButton>
         { !isOffline &&
           <FancyRoundButton

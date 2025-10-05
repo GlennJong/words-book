@@ -11,7 +11,7 @@
         </linearGradient>
         <linearGradient x1="49.9999866%" y1="99.9995692%" x2="49.9999809%" y2="0.000114197323%" id="linearGradient-2">
             <stop stop-color="#2C285B" offset="0%"></stop>
-            <stop stop-color="#2C285B" offset="47.070624%"></stop>
+            <stop stop-color="#2C285B" offset="16.8259079%"></stop>
             <stop stop-color="#7AE5DA" offset="100%"></stop>
         </linearGradient>
         <linearGradient x1="-0.00022370888%" y1="49.9980287%" x2="99.9998509%" y2="49.9980287%" id="linearGradient-3">
@@ -80,9 +80,9 @@
         </linearGradient>
     </defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Group" transform="translate(0.000000, -1.000000)" fill-rule="nonzero">
-            <g id="g2284" transform="translate(93.981333, 152.000000) scale(-1, 1) rotate(-180.000000) translate(-93.981333, -152.000000) translate(0.481333, 0.000000)">
-                <g id="g2286" transform="translate(-0.481333, -0.000000)">
+        <g id="Group" transform="translate(-1.000000, 0.000000)" fill-rule="nonzero">
+            <g id="g2284" transform="translate(94.481333, 151.500000) scale(-1, 1) rotate(-180.000000) translate(-94.481333, -151.500000) translate(0.481333, 0.000000)">
+                <g id="g2286" transform="translate(0.518667, 0.000000)">
                     <g id="g2292">
                         <g id="g2294">
                             <polygon id="path2304" fill="url(#linearGradient-1)" points="0.630813318 0.279648572 186.215842 0.279648572 186.215842 302.942669 0.630813318 302.942669"></polygon>
@@ -91,7 +91,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g1506" opacity="0.300003" transform="translate(16.481333, 5.000000)" fill="#FFFFFF">
+            <g id="g1506" opacity="0.300003" transform="translate(17.481333, 4.000000)" fill="#FFFFFF">
                 <g id="g1320" transform="translate(9.518667, 247.000000)">
                     <polygon id="path1318" points="0 1.5 1.023 0.477 2.046 1.5 1.023 2.5245"></polygon>
                 </g>
@@ -234,7 +234,7 @@
                     <polygon id="path1502" points="0 1.5 1.023 0.4755 2.046 1.5 1.023 2.523"></polygon>
                 </g>
             </g>
-            <g id="g2306" transform="translate(81.999998, 282.000000) scale(-1, 1) rotate(-180.000000) translate(-81.999998, -282.000000) translate(18.666666, 266.000000)" fill="url(#linearGradient-3)">
+            <g id="g2306" transform="translate(82.999998, 281.000000) scale(-1, 1) rotate(-180.000000) translate(-82.999998, -281.000000) translate(19.666666, 265.000000)" fill="url(#linearGradient-3)">
                 <g id="g2308" transform="translate(-0.666666, -0.000000)">
                     <g id="g2314">
                         <g id="g2316">
@@ -243,7 +243,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2328" transform="translate(117.481333, 279.500000) scale(-1, 1) rotate(-180.000000) translate(-117.481333, -279.500000) translate(47.481333, 255.000000)" fill="url(#linearGradient-4)">
+            <g id="g2328" transform="translate(118.481333, 278.500000) scale(-1, 1) rotate(-180.000000) translate(-118.481333, -278.500000) translate(48.481333, 254.000000)" fill="url(#linearGradient-4)">
                 <g id="g2330" transform="translate(-0.481333, -0.000000)">
                     <g id="g2336">
                         <g id="g2338">
@@ -252,7 +252,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2350" transform="translate(67.333332, 279.500000) scale(-1, 1) rotate(-180.000000) translate(-67.333332, -279.500000) translate(0.000000, 255.000000)" fill="url(#linearGradient-5)">
+            <g id="g2350" transform="translate(68.333332, 278.500000) scale(-1, 1) rotate(-180.000000) translate(-68.333332, -278.500000) translate(1.000000, 254.000000)" fill="url(#linearGradient-5)">
                 <g id="g2352" transform="translate(0.000000, -0.000000)">
                     <g id="g2358">
                         <g id="g2360">
@@ -261,7 +261,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2708" transform="translate(92.333332, 203.769330) scale(-1, 1) rotate(-180.000000) translate(-92.333332, -203.769330) translate(53.333332, 164.769330)" fill="url(#linearGradient-6)">
+            <g id="g2708" transform="translate(93.333332, 202.769330) scale(-1, 1) rotate(-180.000000) translate(-93.333332, -202.769330) translate(54.333332, 163.769330)" fill="url(#linearGradient-6)">
                 <g id="g2710">
                     <g id="g2716">
                         <g id="g2718">
@@ -270,7 +270,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2732" transform="translate(83.999998, 170.102665) scale(-1, 1) rotate(-180.000000) translate(-83.999998, -170.102665) translate(74.666665, 154.769332)" fill="url(#linearGradient-7)">
+            <g id="g2732" transform="translate(84.999998, 169.102665) scale(-1, 1) rotate(-180.000000) translate(-84.999998, -169.102665) translate(75.666665, 153.769332)" fill="url(#linearGradient-7)">
                 <g id="g2734">
                     <g id="g2740">
                         <g id="g2742">
@@ -279,7 +279,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2754" transform="translate(94.666664, 158.769332) scale(-1, 1) rotate(-180.000000) translate(-94.666664, -158.769332) translate(79.999998, 149.435999)" fill="url(#linearGradient-8)">
+            <g id="g2754" transform="translate(95.666664, 157.769332) scale(-1, 1) rotate(-180.000000) translate(-95.666664, -157.769332) translate(80.999998, 148.435999)" fill="url(#linearGradient-8)">
                 <g id="g2756">
                     <g id="g2762">
                         <g id="g2764">
@@ -288,7 +288,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2776" transform="translate(98.666664, 174.102665) scale(-1, 1) rotate(-180.000000) translate(-98.666664, -174.102665) translate(87.999998, 162.769332)" fill="url(#linearGradient-9)">
+            <g id="g2776" transform="translate(99.666664, 173.102665) scale(-1, 1) rotate(-180.000000) translate(-99.666664, -173.102665) translate(88.999998, 161.769332)" fill="url(#linearGradient-9)">
                 <g id="g2778">
                     <g id="g2784">
                         <g id="g2786">
@@ -297,7 +297,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2798" transform="translate(101.999997, 134.102666) scale(-1, 1) rotate(-180.000000) translate(-101.999997, -134.102666) translate(89.333331, 113.436000)" fill="url(#linearGradient-10)">
+            <g id="g2798" transform="translate(102.999997, 133.102666) scale(-1, 1) rotate(-180.000000) translate(-102.999997, -133.102666) translate(90.333331, 112.436000)" fill="url(#linearGradient-10)">
                 <g id="g2800">
                     <g id="g2806">
                         <g id="g2808">
@@ -306,7 +306,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2820" transform="translate(88.666664, 119.436000) scale(-1, 1) rotate(-180.000000) translate(-88.666664, -119.436000) translate(69.333331, 106.769334)" fill="url(#linearGradient-11)">
+            <g id="g2820" transform="translate(89.666664, 118.436000) scale(-1, 1) rotate(-180.000000) translate(-89.666664, -118.436000) translate(70.333331, 105.769334)" fill="url(#linearGradient-11)">
                 <g id="g2822">
                     <g id="g2828">
                         <g id="g2830">
@@ -315,7 +315,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2842" transform="translate(83.333331, 139.435999) scale(-1, 1) rotate(-180.000000) translate(-83.333331, -139.435999) translate(69.333331, 124.102666)" fill="url(#linearGradient-12)">
+            <g id="g2842" transform="translate(84.333331, 138.435999) scale(-1, 1) rotate(-180.000000) translate(-84.333331, -138.435999) translate(70.333331, 123.102666)" fill="url(#linearGradient-12)">
                 <g id="g2844">
                     <g id="g2850">
                         <g id="g2852">
@@ -324,7 +324,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2864" transform="translate(78.666665, 88.769334) scale(-1, 1) rotate(-180.000000) translate(-78.666665, -88.769334) translate(62.666665, 61.436001)" fill="url(#linearGradient-13)">
+            <g id="g2864" transform="translate(79.666665, 87.769334) scale(-1, 1) rotate(-180.000000) translate(-79.666665, -87.769334) translate(63.666665, 60.436001)" fill="url(#linearGradient-13)">
                 <g id="g2866">
                     <g id="g2872">
                         <g id="g2874">
@@ -333,7 +333,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2886" transform="translate(95.999997, 68.769334) scale(-1, 1) rotate(-180.000000) translate(-95.999997, -68.769334) translate(70.666665, 52.102668)" fill="url(#linearGradient-14)">
+            <g id="g2886" transform="translate(96.999997, 67.769334) scale(-1, 1) rotate(-180.000000) translate(-96.999997, -67.769334) translate(71.666665, 51.102668)" fill="url(#linearGradient-14)">
                 <g id="g2888">
                     <g id="g2894">
                         <g id="g2896">
@@ -342,7 +342,7 @@
                     </g>
                 </g>
             </g>
-            <g id="g2908" transform="translate(103.333331, 95.436000) scale(-1, 1) rotate(-180.000000) translate(-103.333331, -95.436000) translate(85.333331, 74.769334)" fill="url(#linearGradient-15)">
+            <g id="g2908" transform="translate(104.333331, 94.436000) scale(-1, 1) rotate(-180.000000) translate(-104.333331, -94.436000) translate(86.333331, 73.769334)" fill="url(#linearGradient-15)">
                 <g id="g2910">
                     <g id="g2916">
                         <g id="g2918">
