@@ -13,11 +13,11 @@ const Background = () => {
       const galaxy = new GalaxyGenerator(canvasRef.current);
       galaxy.onSetConfig({
         nebulaCount: 10,
-        starCount: 200,
+        starCount: 120,
         globalAlpha: 0.4,
         minStarRadius: 0.5,
         maxStarRadius: 1.5,
-        starSpeedFactor: 20,
+        starSpeedFactor: 100,
         minStarAlpha: 0.25,
         minStarSizeFactor: 0.25,
         minInitialDist: 50,
@@ -40,6 +40,7 @@ const Background = () => {
     if (galaxyRef.current) {
       galaxyRef.current.setMainColor(theme.base);
       galaxyRef.current.setSideColors(theme.colors);
+      galaxyRef.current.runForDuration(1000);
     }
   }, [theme])
 

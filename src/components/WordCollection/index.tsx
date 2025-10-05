@@ -42,6 +42,7 @@ function cardMovingHandler(delta: number[], coverElement: HTMLElement, cardEleme
   `;
   
   cardElement.style.transition = 'none';
+  cardElement.style.willChange = 'transform';
   cardElement.style.transform = `
     translate(
       ${Math.min(Math.max(delta[0] * TRANSLATE_RATIO, -TRANSLATE_LIMITATION_X), TRANSLATE_LIMITATION_X)}px,
@@ -58,6 +59,7 @@ function cardResetStyleHandler(coverElement: HTMLElement, cardElement: HTMLEleme
   coverElement.style.boxShadow = `inset 0px 0px 0px hsla(30, 100%, 80%, 0)`;
   coverElement.style.backgroundPosition = `50% 50%`;
 
+  cardElement.style.willChange = 'none';
   cardElement.style.transition = enableTransition ? 'transform 0.2s ease-in-out' : 'none';
   cardElement.style.transform = `translate(0px) rotateY(0deg) rotateX(0deg)`;
 };
@@ -336,8 +338,8 @@ const FancyButton = ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButt
   return (
     <button
       className="fancy-button"
-      onTouchStart={(e) => e.currentTarget.classList.add('active')}
-      onTouchEnd={(e) => e.currentTarget.classList.remove('active')}
+      // onTouchStart={(e) => e.currentTarget.classList.add('active')}
+      // onTouchEnd={(e) => e.currentTarget.classList.remove('active')}
       { ...props }
     >
       { children }
@@ -349,8 +351,8 @@ const FancyRoundButton = ({ children, ...props }: React.ButtonHTMLAttributes<HTM
   return (
     <button
       className="fancy-button rounded"
-      onTouchStart={(e) => e.currentTarget.classList.add('active')}
-      onTouchEnd={(e) => e.currentTarget.classList.remove('active')}
+      // onTouchStart={(e) => e.currentTarget.classList.add('active')}
+      // onTouchEnd={(e) => e.currentTarget.classList.remove('active')}
       { ...props }
     >
       { children }

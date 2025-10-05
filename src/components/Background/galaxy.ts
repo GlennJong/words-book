@@ -1,3 +1,4 @@
+const STATIC_MODE = true;
 type Config = {
   nebulaCount: number;
   starCount: number;
@@ -32,6 +33,28 @@ type NebulaPatch = {
 };
 
 export class GalaxyGenerator {
+  /**
+   * 只在指定毫秒內執行 nebula 變色與星星移動動畫
+   * @param ms 執行動畫的毫秒數
+   * @param onDone 動畫結束時的 callback（可選）
+   */
+  runForDuration(ms: number, onDone?: () => void) {
+    this.onStop();
+    const start = performance.now();
+    const animateOnce = (now: number) => {
+      const elapsed = now - start;
+      this.#drawNebula();
+      this.#updateStars();
+      this.#drawStars();
+      if (elapsed < ms) {
+        this.#animationFrameId = requestAnimationFrame(animateOnce);
+      } else {
+        this.#animationFrameId = null;
+        if (onDone) onDone();
+      }
+    };
+    this.#animationFrameId = requestAnimationFrame(animateOnce);
+  }
   #canvas;
   #ctx;
   #width = 0;
@@ -42,6 +65,8 @@ export class GalaxyGenerator {
   #nebulaPatches: NebulaPatch[] = [];
   #nebulaPositions: {x: number, y: number, radius: number, centerAlpha: number, middleAlpha: number}[] = [];
   #animationFrameId: number | null = null;
+  #lastDrawTime: number = 0;
+  #targetFPS: number = 30;
 
   #MAIN_COLOR = 'rgba(60, 0, 150, 1)';
   #SIDE_COLORS = [
@@ -187,6 +212,11 @@ export class GalaxyGenerator {
   onStart() {
     this.#setupCanvas();
     this.onReDraw();
+    if (STATIC_MODE) {
+      // 靜態模式下只畫一次，不啟動動畫
+      this.#drawNebula();
+      this.#drawStars();
+    }
   }
 
   onStop() {
@@ -215,7 +245,9 @@ export class GalaxyGenerator {
     }
     this.#initNebula();
     this.#initStars();
-    this.#animationFrameId = requestAnimationFrame(this.#animate.bind(this));
+    if (!STATIC_MODE) {
+      this.#animationFrameId = requestAnimationFrame(this.#animate.bind(this));
+    }
   }
   #onResize() {
     this.#setupCanvas();
@@ -426,12 +458,13 @@ export class GalaxyGenerator {
     });
   }
 
-  #animate = () => {
-    this.#drawNebula();
-    this.#updateStars();
-    this.#drawStars();
-
-    // Always continue the animation loop with requestAnimationFrame
+  #animate = (now = performance.now()) => {
+    if (now - this.#lastDrawTime > 1000 / this.#targetFPS) {
+      this.#drawNebula();
+      this.#updateStars();
+      this.#drawStars();
+      this.#lastDrawTime = now;
+    }
     this.#animationFrameId = requestAnimationFrame(this.#animate);
   }
 }
