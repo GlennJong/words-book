@@ -1,0 +1,72 @@
+.card {
+  position: relative;
+  margin: auto;
+  overflow: hidden;
+}
+
+.card > .inner {
+  padding: 36px 24px;
+  box-sizing: border-box;
+}
+
+.card > .inner > .level {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  font-family: 'Caprasimo';
+  text-align: right;
+  color: #fff;
+  width: 100%;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.card > .inner > .level:before {
+  content: "";
+  width: 60%;
+  height: 0.5px;
+  background: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+}
+
+.card > .inner > .word {
+  margin-bottom: 12px;
+  font-family: 'Caprasimo';
+  font-size: 30px;
+  color: invert(var(--word-color, #fff));
+  filter: invert(1) drop-shadow(0 0 2px #0008);
+}
+
+.extra {
+  margin-bottom: 6px;
+  font-family: 'Roboto Condensed';
+  font-weight: 600;
+  font-size: 13px;
+  white-space: break-spaces;
+  color: invert(var(--word-color, #fff));
+  filter: invert(1) drop-shadow(0 0 2px #0008);
+  text-align: left;
+  min-height: 32px;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.extra button {
+  display: flex;
+  border: 0;
+  font-size: 14px;
+  padding: 8px 12px;
+  background-color: hsla(0, 0%, 100%, .2);
+  color: #000;
+  font-family: 'Roboto Condensed';
+}
+.extra button > svg {
+  margin-right: 4px;
+  width: 16px;
+  height: auto;
+}

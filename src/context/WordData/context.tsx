@@ -2,7 +2,6 @@ import React, { createContext, useContext } from 'react';
 import { useWordData } from './hook';
 import { useGlobalSettings } from '../GlobalSetting/context';
 
-// WordDataContext 型別可根據 useWordData 回傳內容自動推斷
 export const WordDataContext = createContext<ReturnType<typeof useWordData> | null>(null);
 
 export const useWordDataContext = () => {

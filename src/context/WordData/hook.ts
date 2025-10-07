@@ -46,6 +46,7 @@ type useWordDataProps = {
 export const useWordData = ({isDemo, isOffline, endpoint, token}: useWordDataProps) => {
   const [isLevelMode, setIsLevelMode] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(0);
+  const currentLevelRef = useRef(0);
   const [data, setData] = useState<WordData[]>([]);
   const [shuffledIndexes, setShuffledIndexes] = useState<number[]>([]);
   const pendingCreateRef = useRef<WordData[]>([]);
@@ -54,6 +55,10 @@ export const useWordData = ({isDemo, isOffline, endpoint, token}: useWordDataPro
   const [isFetching, setIsFetching] = useState(false);
   const [isFetched, setIsFetched] = useState(false);
   const [isFetchError, setIsFetchError] = useState(false);
+
+  useEffect(() => {
+    currentLevelRef.current = currentLevel;
+  }, [currentLevel])
 
   // TODO: demo mode
   const isEnabled = endpoint && token || isDemo;
@@ -198,7 +203,15 @@ export const useWordData = ({isDemo, isOffline, endpoint, token}: useWordDataPro
     isLevelMode,
     setIsLevelMode,
     level: currentLevel,
-    upperLevel: (number: number) => setCurrentLevel(number > 5 ? 0 : number),
+    upperLevel: (number?: number) => {
+      const sumLevel = typeof number === 'number' ?
+        number + currentLevelRef.current
+        :
+        currentLevelRef.current + 1;
+
+      const result = sumLevel > 5 ? sumLevel%6 : sumLevel < 0 ? 5 : sumLevel;
+      setCurrentLevel(result)
+    },
     create,
     update,
     remove,

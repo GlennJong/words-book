@@ -33,11 +33,6 @@ type NebulaPatch = {
 };
 
 export class GalaxyGenerator {
-  /**
-   * 只在指定毫秒內執行 nebula 變色與星星移動動畫
-   * @param ms 執行動畫的毫秒數
-   * @param onDone 動畫結束時的 callback（可選）
-   */
   runForDuration(ms: number, onDone?: () => void) {
     this.onStop();
     const start = performance.now();
