@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import FullScreenPanel from '../FullScreenPanel';
 import WordForm from '../WordForm';
 import { useWordDataContext } from '@/context/WordData/context';
@@ -9,24 +9,22 @@ import LevelSwiper from './LevelSwiper';
 
 const WordCollection = () => {
   const { isOffline, setTheme } = useGlobalSettings();
-  const { isFetching, data, isLevelMode, setIsLevelMode, upperLevel, level, suffle } = useWordDataContext();
-  const [ curIndex, setCurIndex ] = useState(0);
-  const curIndexRef = useRef<number>(0);
+  const { isFetching, isLevelMode, setIsLevelMode, upperLevel, level, suffle } = useWordDataContext();
 
   useEffect(() => {
     setTheme(`level_${level+1}` as "level_1" | "level_2" | "level_3" | "level_4" | "level_5" | "level_6");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [level])
 
-  useEffect(() => {
-    if (curIndex >= data.length && data.length > 0) {
-      setCurIndex(0);
-      curIndexRef.current = 0;
-    }
-  }, [data, curIndex]);
+  // useEffect(() => {
+  //   if (curIndex >= data.length && data.length > 0) {
+  //     setCurIndex(0);
+  //     curIndexRef.current = 0;
+  //   }
+  // }, [data, curIndex]);
 
   const [ isCreateNewWordOpen , setIsCreateNewWordOpen ] = useState(false);
-  const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
+  // const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
 
   return (
     <div style={{
@@ -66,7 +64,7 @@ const WordCollection = () => {
           <FancyRoundButton
             onClick={() => {
               upperLevel(1);
-              setCurIndex(0);
+              // setCurIndex(0);
             }}>
             ⇮
           </FancyRoundButton>
@@ -74,7 +72,7 @@ const WordCollection = () => {
         <FancyRoundButton
           onClick={() => {
             setIsLevelMode(!isLevelMode);
-            setCurIndex(0);
+            // setCurIndex(0);
           }}
           style={{fontSize: '12px'}}
         >
@@ -87,13 +85,6 @@ const WordCollection = () => {
             +
           </FancyRoundButton>
         }
-        { !isOffline &&
-          <FancyRoundButton
-            onClick={() => setIsUpdateWordOpen(true)}
-          >
-            ✎
-          </FancyRoundButton>
-        }
         <FancyRoundButton
           onClick={() => suffle()}
         >
@@ -102,9 +93,6 @@ const WordCollection = () => {
       </div>
       <FullScreenPanel open={isCreateNewWordOpen} setOpen={setIsCreateNewWordOpen}>
         <WordForm mode="create" onConfirm={() => setIsCreateNewWordOpen(false)} />
-      </FullScreenPanel>
-      <FullScreenPanel open={isUpdateWordOpen} setOpen={setIsUpdateWordOpen}>
-        <WordForm mode="edit" data={data[curIndex]} onConfirm={() => setIsUpdateWordOpen(false)} />
       </FullScreenPanel>
     </div>
   )

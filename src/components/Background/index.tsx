@@ -13,11 +13,11 @@ const Background = () => {
       const galaxy = new GalaxyGenerator(canvasRef.current);
       galaxy.onSetConfig({
         nebulaCount: 10,
-        starCount: 120,
+        starCount: 200,
         globalAlpha: 0.4,
         minStarRadius: 0.5,
         maxStarRadius: 1.5,
-        starSpeedFactor: 100,
+        starSpeedFactor: 1000,
         minStarAlpha: 0.25,
         minStarSizeFactor: 0.25,
         minInitialDist: 50,

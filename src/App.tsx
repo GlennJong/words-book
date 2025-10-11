@@ -14,6 +14,7 @@ function App() {
 
 const InnerApp = () => {
   const { isDemo, isOffline, endpoint, token } = useGlobalSettings();
+  console.log({isDemo, isOffline, endpoint, token});
   return (
     <Wrapper id="App">
       <>

@@ -54,6 +54,8 @@ interface CardBodyProps {
   instance: string;
   translation: string;
   level: number;
+  isEditable?: boolean;
+  onEditClick?: () => void;
 }
 
 const CARDSIZE = {
@@ -70,7 +72,7 @@ const levelBackgroundMap: { [key: number]: keyof typeof wordcardBackground } = {
   5: 'level_max',
 };
 
-const CardBody = ({ word, description, instance, translation, level }: CardBodyProps) => {
+const CardBody = ({ word, description, instance, translation, level, isEditable=false, onEditClick }: CardBodyProps) => {
   const backgroundKey = levelBackgroundMap[level] || 'level_1';
   return (
     <div className="card" style={{ maxWidth: '65vw', maxHeight: '50vh', ...CARDSIZE, ...wordcardBackground[backgroundKey] }}>
@@ -82,6 +84,13 @@ const CardBody = ({ word, description, instance, translation, level }: CardBodyP
             <span>{ level+1 }.</span>
           }
         </div>
+        { isEditable &&
+          <div className="edit"
+            onClick={onEditClick}
+          >
+            ✎
+          </div>
+        }
         <div
           className="word"
           style={{

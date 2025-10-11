@@ -26,6 +26,7 @@ function Main() {
               backgroundColor: 'transparent',
               border: '0',
               boxSizing: 'border-box',
+              zIndex: '1',
             }}
             onClick={() => {
               setEndpoint(undefined)

@@ -21,6 +21,16 @@
   box-sizing: border-box;
 }
 
+.card > .inner > .edit {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  text-align: left;
+  color: #fff;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
 .card > .inner > .level:before {
   content: "";
   width: 60%;

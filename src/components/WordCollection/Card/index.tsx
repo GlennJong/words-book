@@ -3,6 +3,9 @@ import CardCover from './CardCover';
 import CardBody from './CardBody';
 import useTouch from '../useTouch';
 import { useWordDataContext } from '@/context/WordData/context';
+import FullScreenPanel from '@/components/FullScreenPanel';
+import WordForm from '@/components/WordForm';
+import { useGlobalSettings } from '@/context/GlobalSetting/context';
 
 const ACTIVE_X = 120;
 const ACTIVE_Y = 120;
@@ -79,6 +82,8 @@ function cardAutoMoveoutStyleHandler(time: number = 300, direction: 'left' | 'ri
 const WordCard = () => {
   const { data } = useWordDataContext();
   const [ curIndex, setCurIndex ] = useState(0);
+  const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
+  const { isOffline } = useGlobalSettings();
   const curIndexRef = useRef<number>(0);
 
   useEffect(() => {
@@ -161,58 +166,75 @@ const WordCard = () => {
   const isCardEmpty = data.length === 0;
 
   return (
-    <div id="CardTouch" style={{ position: 'relative' }}>
-      {/* Front Card */}
-      <div style={{ position: 'relative', zIndex: '1' }}>
-        { isCardEmpty &&
+    <>
+      <div id="CardTouch" style={{ position: 'relative' }}>
+        {/* Front Card */}
+        <div style={{ position: 'relative', zIndex: '1' }}>
+          { isCardEmpty &&
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              opacity: "0.6",
+              maxWidth: "65vw",
+              maxHeight: "50vh",
+              width: "300px",
+              height: "450px",
+            }}>
+              No cards in this level.
+            </div>
+          }
+          { !isCardEmpty && frontCard &&
+            <CardWrapper3D>
+              <div ref={cardRef}>
+                <CardCover ref={coverRef} />
+                <CardBody
+                  level={frontCard.level}
+                  word={frontCard.word}
+                  description={frontCard.description}
+                  instance={frontCard.instance}
+                  translation={frontCard.translation}
+                  isEditable={!isOffline}
+                  onEditClick={() => setIsUpdateWordOpen(true)}
+                />
+              </div>
+            </CardWrapper3D>
+          }
+        </div>
+        {/* Back Card */}
+        { !isCardEmpty && backCard &&
           <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#fff",
-            opacity: "0.6",
-            maxWidth: "65vw",
-            maxHeight: "50vh",
-            width: "300px",
-            height: "450px",
-          }}>
-            No cards in this level.
+              position: 'absolute',
+              left: '0',
+              top: '0',
+              zIndex: '0',
+              pointerEvents: 'none'
+            }}>
+            <CardBody
+              level={backCard.level}
+              word={backCard.word}
+              description={backCard.description}
+              instance={backCard.instance}
+              translation={backCard.translation}
+              isEditable={!isOffline}
+            />
           </div>
         }
-        { !isCardEmpty && frontCard &&
-          <CardWrapper3D>
-            <div ref={cardRef}>
-              <CardCover ref={coverRef} />
-              <CardBody
-                level={frontCard.level}
-                word={frontCard.word}
-                description={frontCard.description}
-                instance={frontCard.instance}
-                translation={frontCard.translation}
-              />
-            </div>
-          </CardWrapper3D>
-        }
       </div>
-      {/* Back Card */}
-      { !isCardEmpty && backCard &&
-        <div style={{
-            position: 'absolute',
-            left: '0',
-            top: '0',
-            zIndex: '0',
-            pointerEvents: 'none'
-          }}>
-          <CardBody
-            level={backCard.level}
-            word={backCard.word}
-            description={backCard.description}
-            instance={backCard.instance}
-            translation={backCard.translation}
-          />
-        </div>
+
+      { !isOffline &&
+        <button
+          onClick={() => setIsUpdateWordOpen(true)}
+        >
+          ✎
+        </button>
       }
-    </div>
+
+      <FullScreenPanel open={isUpdateWordOpen} setOpen={setIsUpdateWordOpen}>
+        <WordForm mode="edit" data={data[curIndex]} onConfirm={() => setIsUpdateWordOpen(false)} />
+      </FullScreenPanel>
+    </>
   )
 };
 

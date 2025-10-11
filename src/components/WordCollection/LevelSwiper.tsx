@@ -9,7 +9,6 @@ const LevelSwiper = ({ disabled }: { disabled: boolean }) => {
   const { setTheme } = useGlobalSettings();
   const { level, upperLevel } = useWordDataContext();
   useEffect(() => {
-    console.log(level)
     setTheme(`level_${level+1}` as "level_1" | "level_2" | "level_3" | "level_4" | "level_5" | "level_6");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [level])
@@ -20,7 +19,6 @@ const LevelSwiper = ({ disabled }: { disabled: boolean }) => {
   }, []);
 
   const handleTouchEnd = ({ delta }: { delta?: number[] }) => {
-    console.log({delta, disabled})
     
     if (disabled &&
         delta &&
@@ -29,8 +27,6 @@ const LevelSwiper = ({ disabled }: { disabled: boolean }) => {
       
       const direction = delta[1] > 1 ? 'down' : 'up';
 
-      console.log({direction})
-      
       disableTouch();
 
       if (direction === 'down') {
