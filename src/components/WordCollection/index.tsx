@@ -8,7 +8,7 @@ import WordCard from './Card';
 import LevelSwiper from './LevelSwiper';
 
 const WordCollection = () => {
-  const { isOffline, setTheme } = useGlobalSettings();
+  const { isOffline, setTheme, theme } = useGlobalSettings();
   const { isFetching, isLevelMode, setIsLevelMode, upperLevel, level, suffle } = useWordDataContext();
 
   useEffect(() => {
@@ -16,15 +16,7 @@ const WordCollection = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [level])
 
-  // useEffect(() => {
-  //   if (curIndex >= data.length && data.length > 0) {
-  //     setCurIndex(0);
-  //     curIndexRef.current = 0;
-  //   }
-  // }, [data, curIndex]);
-
   const [ isCreateNewWordOpen , setIsCreateNewWordOpen ] = useState(false);
-  // const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
 
   return (
     <div style={{
@@ -64,23 +56,33 @@ const WordCollection = () => {
           <FancyRoundButton
             onClick={() => {
               upperLevel(1);
-              // setCurIndex(0);
             }}>
             ⇮
           </FancyRoundButton>
         }
-        <FancyRoundButton
+        <button
           onClick={() => {
             setIsLevelMode(!isLevelMode);
-            // setCurIndex(0);
           }}
-          style={{fontSize: '12px'}}
+          style={{
+            width: '48px',
+            height: '48px',
+            border: '0',
+            borderRadius: '50%',
+            fontSize: '12px',
+            fontFamily: 'Caprasimo',
+            color: '#fff',
+            background: isLevelMode ? `linear-gradient(135deg, ${theme.colors[0]}, ${theme.colors[1]}, ${theme.colors[2]})` : '#111',
+          }}
         >
           { isLevelMode ? (level + 1) > 5 ? 'max': level+1 : 'mix' }
-        </FancyRoundButton>
+        </button>
         { !isOffline &&
           <FancyRoundButton
             onClick={() => setIsCreateNewWordOpen(true)}
+            style={{
+              color: '#fff',
+            }}
           >
             +
           </FancyRoundButton>

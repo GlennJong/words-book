@@ -195,8 +195,6 @@ const WordCard = () => {
                   description={frontCard.description}
                   instance={frontCard.instance}
                   translation={frontCard.translation}
-                  isEditable={!isOffline}
-                  onEditClick={() => setIsUpdateWordOpen(true)}
                 />
               </div>
             </CardWrapper3D>
@@ -217,7 +215,6 @@ const WordCard = () => {
               description={backCard.description}
               instance={backCard.instance}
               translation={backCard.translation}
-              isEditable={!isOffline}
             />
           </div>
         }
