@@ -1,3 +1,13 @@
+export function easeInOutCirc(x: number): number {
+return x < 0.5
+  ? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2
+  : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2;
+}
+
+export function easeInOutQuart(x: number): number {
+  return x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
+}
+
 const STATIC_MODE = true;
 type Config = {
   nebulaCount: number;
@@ -21,6 +31,8 @@ type Star = {
   y: number;
   radius: number;
   twinkle: boolean;
+  _startDist?: number;
+  _targetDist?: number;
 };
 
 type NebulaPatch = {
@@ -33,13 +45,28 @@ type NebulaPatch = {
 };
 
 export class GalaxyGenerator {
-  runForDuration(ms: number, onDone?: () => void) {
+  runForDuration(
+    ms: number,
+    easeFn: (t: number) => number = t => t,
+    onDone?: () => void,
+    onFrame?: (easeT: number) => void,
+    moveDist: number = 200
+  ) {
     this.onStop();
+    // 動畫開始時記錄每顆星星的起點與終點
+    this.#stars.forEach(star => {
+      star._startDist = star.dist;
+      star._targetDist = star.dist + moveDist;
+    });
     const start = performance.now();
     const animateOnce = (now: number) => {
       const elapsed = now - start;
+      const t = Math.min(1, elapsed / ms);
+      const easeT = easeFn(t);
+      if (onFrame) onFrame(easeT);
+      // 依 easeT 內插 dist
+      this.#updateStars(easeT, true);
       this.#drawNebula();
-      this.#updateStars();
       this.#drawStars();
       if (elapsed < ms) {
         this.#animationFrameId = requestAnimationFrame(animateOnce);
@@ -375,24 +402,29 @@ export class GalaxyGenerator {
     }
   }
 
-  #updateStars() {
+  #updateStars(easeT: number = 1, useLerp: boolean = false) {
     const centerX = this.#width / 2;
     const centerY = this.#height / 2;
     const boundaryDist = Math.max(this.#width, this.#height) / 2 + 50;
 
-    const { starSpeedFactor, minInitialDist, isReversed } = this.#config;
-    const speedFactor = starSpeedFactor * 0.0000001;
+    const { minInitialDist, isReversed } = this.#config;
 
     this.#stars.forEach(star => {
-      const distForAccel = Math.max(1, Math.abs(star.dist));
-      const acceleration = Math.pow(distForAccel, 2) * speedFactor;
-
-      if (isReversed) {
-        star.dist -= acceleration;
+      if (useLerp && star._startDist !== undefined && star._targetDist !== undefined) {
+        // 進度插值
+        star.dist = star._startDist + (star._targetDist - star._startDist) * easeT;
       } else {
-        star.dist += acceleration;
+        // fallback: 原本的速度移動
+        const starSpeedFactor = this.#config.starSpeedFactor;
+        const speedFactor = starSpeedFactor * 0.0000001;
+        const distForAccel = Math.max(1, Math.abs(star.dist));
+        const acceleration = Math.pow(distForAccel, 2) * speedFactor;
+        if (isReversed) {
+          star.dist -= acceleration;
+        } else {
+          star.dist += acceleration;
+        }
       }
-
       const currentDist = star.dist;
       star.x = centerX + Math.cos(star.angle) * currentDist;
       star.y = centerY + Math.sin(star.angle) * currentDist;

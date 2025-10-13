@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { GalaxyGenerator } from './galaxy';
+import { easeInOutQuart, GalaxyGenerator } from './galaxy';
 import './style.css';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
 
@@ -13,12 +13,12 @@ const Background = () => {
       const galaxy = new GalaxyGenerator(canvasRef.current);
       galaxy.onSetConfig({
         nebulaCount: 4,
-        starCount: 600,
-        globalAlpha: 0.4,
+        starCount: 200,
+        globalAlpha: 0.6,
         minStarRadius: 0.5,
         maxStarRadius: 1.5,
-        starSpeedFactor: 2000,
-        minStarAlpha: 0.25,
+        starSpeedFactor: 1000,
+        minStarAlpha: 0.1,
         minStarSizeFactor: 0.25,
         minInitialDist: 50,
         isReversed: false,
@@ -40,7 +40,7 @@ const Background = () => {
     if (galaxyRef.current) {
       galaxyRef.current.setMainColor(theme.base);
       galaxyRef.current.setSideColors(theme.colors);
-      galaxyRef.current.runForDuration(1000);
+      galaxyRef.current.runForDuration(1000, easeInOutQuart);
     }
   }, [theme])
 

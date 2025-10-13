@@ -15,6 +15,7 @@ const TRANSLATE_LIMITATION_Y = 50;
 const TRANSLATE_RATIO = 0.5;
 const ROTATE_LIMITATION = 50;
 const ROTATE_RATIO = 0.1;
+const TRANSITION_TIME = 300;
 
 function cardMovingHandler(delta: number[], coverElement: HTMLElement, cardElement: HTMLElement) {
   coverElement.style.transition = 'none';
@@ -52,7 +53,7 @@ function cardMovingHandler(delta: number[], coverElement: HTMLElement, cardEleme
 };
 
 function cardResetStyleHandler(coverElement: HTMLElement, cardElement: HTMLElement, enableTransition: boolean = true) {
-  coverElement.style.transition = enableTransition ? 'all 0.2s ease-in-out' : 'none';
+  coverElement.style.transition = enableTransition ? `all ${TRANSITION_TIME}ms ease-in-out` : 'none';
   coverElement.style.opacity = `0`;
   coverElement.style.boxShadow = `inset 0px 0px 0px hsla(30, 100%, 80%, 0)`;
   coverElement.style.backgroundPosition = `50% 50%`;
@@ -81,9 +82,10 @@ function cardAutoMoveoutStyleHandler(time: number = 300, direction: 'left' | 'ri
 
 const WordCard = () => {
   const { data } = useWordDataContext();
+  const { isOffline, isDemo } = useGlobalSettings();
   const [ curIndex, setCurIndex ] = useState(0);
   const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
-  const { isOffline } = useGlobalSettings();
+  // const { isOffline } = useGlobalSettings();
   const curIndexRef = useRef<number>(0);
 
   useEffect(() => {
@@ -97,11 +99,12 @@ const WordCard = () => {
 
   const { update: updateWord } = useWordDataContext();
   
-  const handleGoToNextCard = useCallback(() => {
+  const handleGoToNextCard = useCallback((func: () => void) => {
     setCurIndex(prev => {
       let next = prev + 1;
       if (next >= data.length) next = 0;
       curIndexRef.current = next;
+      func();
       return next;
     });
   }, [data])
@@ -133,8 +136,12 @@ const WordCard = () => {
       const result = directionData[currentDirection] as 'left' | 'right' | 'up' | 'down';
       
       disableTouch();
-      await cardAutoMoveoutStyleHandler(150, result, cardRef.current);
-
+      await cardAutoMoveoutStyleHandler(TRANSITION_TIME, result, cardRef.current);
+      handleGoToNextCard(() => {
+        if (coverRef.current && cardRef.current) {
+          cardResetStyleHandler(coverRef.current, cardRef.current, false);
+        }
+      });
       // card moving beheavior
       if (result === 'right') {
         handleCardUpgrade();
@@ -142,9 +149,6 @@ const WordCard = () => {
       else if (result === 'left') {
         handleCardDowngrade();
       }
-      
-      cardResetStyleHandler(coverRef.current, cardRef.current, false);
-      handleGoToNextCard();
       enableTouch();
     }
     else {
@@ -190,6 +194,7 @@ const WordCard = () => {
               <div ref={cardRef}>
                 <CardCover ref={coverRef} />
                 <CardBody
+                  isEditable={!isOffline && !isDemo}
                   level={frontCard.level}
                   word={frontCard.word}
                   description={frontCard.description}
