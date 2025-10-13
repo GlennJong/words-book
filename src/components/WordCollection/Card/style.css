@@ -1,3 +1,82 @@
+@keyframes satelliteMoving {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.normal-button {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  font-size: 16px;
+  font-family: Caprasimo;
+  color: #fff;
+  background-color: #111;
+}
+
+.orbit-button {
+  position: relative;
+}
+
+.orbit-button .orbit {
+  position: absolute;
+  left: -6px;
+  top: -6px;
+  bottom: -6px;
+  right: -6px;
+  border-radius: 50%;
+  border: 0.25px solid hsla(0, 0%, 100%, .66);
+  z-index: -1;
+}
+.orbit-button .orbit .satellite {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  animation: satelliteMoving 5s linear infinite;
+}
+.orbit-button .orbit .satellite:before {
+  content: "";
+  position: absolute;
+  top: calc(50% - 2px);
+  left: -2px;
+  width: 3px;
+  height: 3px;
+  background: #fff;
+  border-radius: 50%;
+}
+.orbit-button .orbit .satellite:after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 1px);
+  right: -1px;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.orbit-button button {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  font-size: 12px;
+  font-family: Caprasimo;
+  color: #fff;
+  background-color: #111;
+  transition: background .3s ease;
+}
+
+.orbit-button button:disabled {
+  opacity: 0.5;
+}
+
 .card {
   position: relative;
   margin: auto;

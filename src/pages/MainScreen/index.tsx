@@ -15,27 +15,28 @@ function Main() {
         width: '100%',
       }}>
 
-          <button
-            className="fancy-button rounded"
-            style={{
-              position: 'fixed',
-              top: '12px',
-              left: '12px',
-              width: '48px',
-              height: '48px',
-              backgroundColor: 'transparent',
-              border: '0',
-              boxSizing: 'border-box',
-              zIndex: '1',
-            }}
-            onClick={() => {
-              setEndpoint(undefined)
-              setToken(undefined)
-              setIsOffline(false)
-            }}
-          >
-            ⏎
-          </button>
+        <button
+          style={{
+            position: 'fixed',
+            top: '12px',
+            left: '12px',
+            width: '48px',
+            height: '48px',
+            color: '#fff',
+            fontSize: '12px',
+            backgroundColor: 'transparent',
+            border: '0',
+            boxSizing: 'border-box',
+            zIndex: '1',
+          }}
+          onClick={() => {
+            setEndpoint(undefined)
+            setToken(undefined)
+            setIsOffline(false)
+          }}
+        >
+          ⏎
+        </button>
           
         <WordInterface />
       </div>

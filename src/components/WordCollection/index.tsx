@@ -6,6 +6,7 @@ import LoadingAnimation from '../LoadingAnimation';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
 import WordCard from './Card';
 import LevelSwiper from './LevelSwiper';
+import { OrbitButton, NormalButton } from './Button';
 
 const WordCollection = () => {
   const { isOffline, setTheme, theme } = useGlobalSettings();
@@ -44,54 +45,41 @@ const WordCollection = () => {
       {/* Word Card */}
       <WordCard />
       <div style={{
-        position: 'fixed',
         display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-        right: '6px',
-        bottom: '12px',
-        zIndex: '99'
+        gap: '12px',
+        position: 'fixed',
+        bottom: '48px',
+        left: '50%',
+        transform: 'translateX(-50%)'
       }}>
-        { isLevelMode &&
-          <FancyRoundButton
-            onClick={() => {
-              upperLevel(1);
-            }}>
-            ⇮
-          </FancyRoundButton>
-        }
-        <button
+        <NormalButton
+          // disabled={isOffline}
+          disabled={true}
+          onClick={() => setIsCreateNewWordOpen(true)}
+        >
+          +
+        </NormalButton>
+        <OrbitButton
           onClick={() => {
-            setIsLevelMode(!isLevelMode);
+            if (!isLevelMode) {
+              setIsLevelMode(true);
+            }
+            if (level === 5) {
+              setIsLevelMode(false);
+            }
+            if (isLevelMode) {
+              upperLevel(1);
+            }
           }}
-          style={{
-            width: '48px',
-            height: '48px',
-            border: '0',
-            borderRadius: '50%',
-            fontSize: '12px',
-            fontFamily: 'Caprasimo',
-            color: '#fff',
-            background: isLevelMode ? `linear-gradient(135deg, ${theme.colors[0]}, ${theme.colors[1]}, ${theme.colors[2]})` : '#111',
-          }}
+          style={{ background: isLevelMode ? `linear-gradient(135deg, ${theme.colors[0]}, ${theme.colors[1]}, ${theme.colors[2]})` : '#111' }}
         >
           { isLevelMode ? (level + 1) > 5 ? 'max': level+1 : 'mix' }
-        </button>
-        { !isOffline &&
-          <FancyRoundButton
-            onClick={() => setIsCreateNewWordOpen(true)}
-            style={{
-              color: '#fff',
-            }}
-          >
-            +
-          </FancyRoundButton>
-        }
-        <FancyRoundButton
+        </OrbitButton>
+        <NormalButton
           onClick={() => suffle()}
         >
           ⟲
-        </FancyRoundButton>
+        </NormalButton>
       </div>
       <FullScreenPanel open={isCreateNewWordOpen} setOpen={setIsCreateNewWordOpen}>
         <WordForm mode="create" onConfirm={() => setIsCreateNewWordOpen(false)} />
@@ -99,18 +87,5 @@ const WordCollection = () => {
     </div>
   )
 };
-
-const FancyRoundButton = ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => {
-  return (
-    <button
-      className="fancy-button rounded"
-      // onTouchStart={(e) => e.currentTarget.classList.add('active')}
-      // onTouchEnd={(e) => e.currentTarget.classList.remove('active')}
-      { ...props }
-    >
-      { children }
-    </button>
-  )
-}
 
 export default WordCollection;
