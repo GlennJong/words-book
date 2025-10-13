@@ -47,28 +47,28 @@ const KeyInputer = () => {
     }}>
       <input
         id="endpoint"
-        placeholder="Input Endpoint"
+        placeholder="endpoint"
         value={endpointInput}
         onChange={e => setEndpointInput(e.target.value)}
-        style={{ padding: '8px', zIndex: 1 }}
+        style={{ zIndex: 1 }}
       />
       <input
         id="token"
-        placeholder="Input Token"
+        placeholder="token"
         value={tokenInput}
         onChange={e => setTokenInput(e.target.value)}
-        style={{ padding: '8px', zIndex: 1}}
+        style={{ zIndex: 1}}
       />
       
       <div style={{ display: 'flex', gap: '12px' }}>
-        <button className='fancy-button' onClick={() => {
+        <button className='text-button' onClick={() => {
           setEndpoint(endpointInput)
           setToken(tokenInput)
           setIsOffline(false)
         }}>
           START
         </button>
-        <button className='fancy-button' onClick={() => setIsOffline(true)}>
+        <button className='text-button' onClick={() => setIsOffline(true)}>
           OFFLINE
         </button>
       </div>

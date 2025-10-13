@@ -32,7 +32,7 @@ const WordCollection = () => {
       }}
     >
       { isOffline &&
-        <div style={{ position: 'fixed', bottom: '24px', left: '16px', color: '#fff', fontSize: '12px' }}>
+        <div style={{ position: 'fixed', bottom: '24px', left: '16px', color: '#fff', fontSize: '12px', fontFamily: 'Roboto Condensed' }}>
           offline
         </div>
       }
@@ -53,8 +53,7 @@ const WordCollection = () => {
         transform: 'translateX(-50%)'
       }}>
         <NormalButton
-          // disabled={isOffline}
-          disabled={true}
+          disabled={isOffline}
           onClick={() => setIsCreateNewWordOpen(true)}
         >
           +

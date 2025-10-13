@@ -7,8 +7,8 @@ import FullScreenPanel from '@/components/FullScreenPanel';
 import WordForm from '@/components/WordForm';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
 
-const ACTIVE_X = 120;
-const ACTIVE_Y = 120;
+const CARD_ACTIVE_X = 100;
+const CARD_ACTIVE_Y = 100;
 
 const TRANSLATE_LIMITATION_X = 50;
 const TRANSLATE_LIMITATION_Y = 50;
@@ -80,6 +80,30 @@ function cardAutoMoveoutStyleHandler(time: number = 300, direction: 'left' | 'ri
   })
 }
 
+function hintElementHandler(delta: number[], skipElement: HTMLElement, upgradeElement: HTMLElement, downgradeElement: HTMLElement) {
+  const isSkip = Math.abs(delta[1]) > Math.abs(delta[0]) && delta[1] > 0;
+  if (isSkip) {
+    skipElement.style.opacity = '1';
+    upgradeElement.style.opacity = '0';
+    downgradeElement.style.opacity = '0';
+  }
+  else if (delta[0] > 0) {
+    skipElement.style.opacity = '0';
+    upgradeElement.style.opacity = '1';
+    downgradeElement.style.opacity = '0';
+  }
+  else {
+    skipElement.style.opacity = '0';
+    upgradeElement.style.opacity = '0';
+    downgradeElement.style.opacity = '1';
+  }
+}
+function resetElementHandler(skipElement: HTMLElement, upgradeElement: HTMLElement, downgradeElement: HTMLElement) {
+  skipElement.style.opacity = '0';
+  upgradeElement.style.opacity = '0';
+  downgradeElement.style.opacity = '0';
+}
+
 const WordCard = () => {
   const { data } = useWordDataContext();
   const { isOffline, isDemo } = useGlobalSettings();
@@ -87,6 +111,9 @@ const WordCard = () => {
   const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
   // const { isOffline } = useGlobalSettings();
   const curIndexRef = useRef<number>(0);
+  const skipGradientRef = useRef<HTMLDivElement>(null);
+  const upgradeGradientRef = useRef<HTMLDivElement>(null);
+  const downgradeGradientRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (curIndex >= data.length && data.length > 0) {
@@ -112,6 +139,15 @@ const WordCard = () => {
   const handleCardTouchingStyle = useCallback(function({ delta }: { delta?: number[] }) {
     if (!cardRef.current || !coverRef.current || !delta) return;
     cardMovingHandler(delta, coverRef.current, cardRef.current);
+
+    if (skipGradientRef.current && upgradeGradientRef.current && downgradeGradientRef.current) {
+      if (Math.abs(delta[0]) > CARD_ACTIVE_X * 0.66 || Math.abs(delta[1]) > CARD_ACTIVE_Y * 0.66) {
+        hintElementHandler(delta, skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
+      }
+      else {
+        resetElementHandler(skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
+      }
+    }
   }, []);
 
   const handleCardUpgrade = () => {
@@ -124,7 +160,7 @@ const WordCard = () => {
   }
   
   const handleCardTouchEnd = useCallback(async function({ delta }: { delta?: number[] }) {
-    if (delta && delta.length > 0 && (Math.abs(delta[0]) > ACTIVE_X || Math.abs(delta[1]) > ACTIVE_Y)) {
+    if (delta && delta.length > 0 && (Math.abs(delta[0]) > CARD_ACTIVE_X || Math.abs(delta[1]) > CARD_ACTIVE_Y)) {
       
       if (!coverRef.current || !cardRef.current) return;
       
@@ -152,8 +188,14 @@ const WordCard = () => {
       enableTouch();
     }
     else {
-      if (!coverRef.current || !cardRef.current) return;
-      cardResetStyleHandler(coverRef.current, cardRef.current, true);
+      if (coverRef.current && cardRef.current) {
+        cardResetStyleHandler(coverRef.current, cardRef.current, true);
+      };
+    }
+
+    if (skipGradientRef.current && upgradeGradientRef.current && downgradeGradientRef.current) {
+      console.log('work')
+      resetElementHandler(skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
     }
   }, [handleGoToNextCard])
 
@@ -171,6 +213,91 @@ const WordCard = () => {
 
   return (
     <>
+      <div ref={skipGradientRef} style={{
+        position: 'fixed',
+        bottom: '0',
+        left: '0',
+        width: '100%',
+        height: '360px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '50%',
+        pointerEvents: 'none',
+        zIndex: '2',
+        mixBlendMode: 'hard-light',
+        transition: 'opacity 0.2s ease-in-out',
+        transform: 'translateY(60%)',
+        backgroundImage: 'radial-gradient(#7ec29d 0%, rgba(126, 194, 157, .5) 22%,transparent 66%)',
+        opacity: '0',
+      }}>
+        <div style={{
+          position: 'relative',
+          top: '-120px',
+          fontFamily: 'Roboto Condensed',
+          fontSize: '16px',
+          color: 'hsla(0, 0%, 100%, 1)',
+          textAlign: 'center',
+        }}>It's on the tip of my tongue</div>
+      </div>
+      <div ref={downgradeGradientRef} style={{
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        bottom: '0',
+        width: '160px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '50%',
+        pointerEvents: 'none',
+        zIndex: '2',
+        mixBlendMode: 'hard-light',
+        transition: 'opacity 0.2s ease-in-out',
+        transform: 'translateX(-60%)',
+        backgroundImage: 'radial-gradient(#4d4bd7 0%, rgba(77, 75, 215, .5) 22%,transparent 66%)',
+        opacity: '0',
+      }}>
+        <div style={{
+          position: 'relative',
+          right: '-48px',
+          fontFamily: 'Roboto Condensed',
+          fontSize: '18px',
+          color: 'hsla(0, 0%, 100%, 1)',
+          textAlign: 'center',
+          transform: 'rotate(90deg)',
+          whiteSpace: 'nowrap'
+        }}>My mind went blank</div>
+      </div>
+      <div ref={upgradeGradientRef} style={{
+        position: 'fixed',
+        top: '0',
+        right: '0',
+        bottom: '0',
+        width: '160px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: '50%',
+        pointerEvents: 'none',
+        zIndex: '2',
+        mixBlendMode: 'hard-light',
+        transition: 'opacity 0.2s ease-in-out',
+        transform: 'translateX(60%)',
+        backgroundImage: 'radial-gradient(#f1e02b 0%, rgba(241, 224, 43, .5) 22%,transparent 66%)',
+        opacity: '0',
+      }}>
+        <div style={{
+          position: 'relative',
+          left: '-48px',
+          fontFamily: 'Roboto Condensed',
+          fontSize: '18px',
+          color: 'hsla(0, 0%, 100%, 1)',
+          textAlign: 'center',
+          transform: 'rotate(-90deg)',
+          whiteSpace: 'nowrap'
+        }}>Totally get it</div>
+      </div>
       <div id="CardTouch" style={{ position: 'relative' }}>
         {/* Front Card */}
         <div style={{ position: 'relative', zIndex: '1' }}>

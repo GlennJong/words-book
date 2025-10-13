@@ -15,7 +15,7 @@
   font-size: 16px;
   font-family: Caprasimo;
   color: #fff;
-  background-color: #111;
+  background-color: #151515;
 }
 
 .orbit-button {
@@ -73,7 +73,8 @@
   transition: background .3s ease;
 }
 
-.orbit-button button:disabled {
+.orbit-button button:disabled,
+.normal-button:disabled {
   opacity: 0.5;
 }
 
