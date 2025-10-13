@@ -194,7 +194,6 @@ const WordCard = () => {
     }
 
     if (skipGradientRef.current && upgradeGradientRef.current && downgradeGradientRef.current) {
-      console.log('work')
       resetElementHandler(skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
     }
   }, [handleGoToNextCard])
@@ -255,7 +254,7 @@ const WordCard = () => {
         mixBlendMode: 'hard-light',
         transition: 'opacity 0.2s ease-in-out',
         transform: 'translateX(-60%)',
-        backgroundImage: 'radial-gradient(#4d4bd7 0%, rgba(77, 75, 215, .5) 22%,transparent 66%)',
+        backgroundImage: 'radial-gradient(#3735ba 0%, rgba(77, 75, 215, .5) 22%,transparent 66%)',
         opacity: '0',
       }}>
         <div style={{
@@ -284,7 +283,7 @@ const WordCard = () => {
         mixBlendMode: 'hard-light',
         transition: 'opacity 0.2s ease-in-out',
         transform: 'translateX(60%)',
-        backgroundImage: 'radial-gradient(#f1e02b 0%, rgba(241, 224, 43, .5) 22%,transparent 66%)',
+        backgroundImage: 'radial-gradient(#b013c8 0%, rgba(176, 19, 200, .5) 22%,transparent 66%)',
         opacity: '0',
       }}>
         <div style={{
