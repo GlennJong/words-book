@@ -321,6 +321,7 @@ const WordCard = () => {
                 <CardCover ref={coverRef} />
                 <CardBody
                   isEditable={!isOffline && !isDemo}
+                  onEditClick={() => setIsUpdateWordOpen(true)}
                   level={frontCard.level}
                   word={frontCard.word}
                   description={frontCard.description}
@@ -350,14 +351,6 @@ const WordCard = () => {
           </div>
         }
       </div>
-
-      { !isOffline &&
-        <button
-          onClick={() => setIsUpdateWordOpen(true)}
-        >
-          ✎
-        </button>
-      }
 
       <FullScreenPanel open={isUpdateWordOpen} setOpen={setIsUpdateWordOpen}>
         <WordForm mode="edit" data={data[curIndex]} onConfirm={() => setIsUpdateWordOpen(false)} />
