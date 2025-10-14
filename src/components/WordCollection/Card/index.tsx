@@ -331,7 +331,7 @@ const WordCard = () => {
               <div ref={cardRef}>
                 <CardCover ref={coverRef} />
                 <CardBody
-                  isEditable={!isOffline && !isDemo}
+                  isEditable={!isOffline}
                   onEditClick={() => setIsUpdateWordOpen(true)}
                   level={currentCard.level}
                   word={currentCard.word}
