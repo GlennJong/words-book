@@ -8,7 +8,7 @@ import WordForm from '@/components/WordForm';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
 
 const CARD_ACTIVE_X = 100;
-const CARD_ACTIVE_Y = 100;
+const CARD_ACTIVE_Y = 150;
 
 const TRANSLATE_LIMITATION_X = 50;
 const TRANSLATE_LIMITATION_Y = 50;
@@ -98,7 +98,7 @@ function hintElementHandler(delta: number[], skipElement: HTMLElement, upgradeEl
     downgradeElement.style.opacity = '1';
   }
 }
-function resetElementHandler(skipElement: HTMLElement, upgradeElement: HTMLElement, downgradeElement: HTMLElement) {
+function resetHintElementHandler(skipElement: HTMLElement, upgradeElement: HTMLElement, downgradeElement: HTMLElement) {
   skipElement.style.opacity = '0';
   upgradeElement.style.opacity = '0';
   downgradeElement.style.opacity = '0';
@@ -108,6 +108,7 @@ const WordCard = () => {
   const { data } = useWordDataContext();
   const { isOffline, isDemo } = useGlobalSettings();
   const [ curIndex, setCurIndex ] = useState(0);
+  // const [ nextIndex, setNextIndex ] = useState(1);
   const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
   // const { isOffline } = useGlobalSettings();
   const curIndexRef = useRef<number>(0);
@@ -126,12 +127,14 @@ const WordCard = () => {
 
   const { update: updateWord } = useWordDataContext();
   
-  const handleGoToNextCard = useCallback((func: () => void) => {
+  const handleGoToNextCard = useCallback((func?: () => void) => {
     setCurIndex(prev => {
       let next = prev + 1;
       if (next >= data.length) next = 0;
       curIndexRef.current = next;
-      func();
+      if (func) {
+        func();
+      }
       return next;
     });
   }, [data])
@@ -145,7 +148,7 @@ const WordCard = () => {
         hintElementHandler(delta, skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
       }
       else {
-        resetElementHandler(skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
+        resetHintElementHandler(skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
       }
     }
   }, []);
@@ -170,14 +173,7 @@ const WordCard = () => {
       }
       const currentDirection = Math.abs(delta[0]) > Math.abs(delta[1]) ? 'horizontal' : 'vertical';
       const result = directionData[currentDirection] as 'left' | 'right' | 'up' | 'down';
-      
-      disableTouch();
-      await cardAutoMoveoutStyleHandler(TRANSITION_TIME, result, cardRef.current);
-      handleGoToNextCard(() => {
-        if (coverRef.current && cardRef.current) {
-          cardResetStyleHandler(coverRef.current, cardRef.current, false);
-        }
-      });
+
       // card moving beheavior
       if (result === 'right') {
         handleCardUpgrade();
@@ -185,6 +181,19 @@ const WordCard = () => {
       else if (result === 'left') {
         handleCardDowngrade();
       }
+      
+      disableTouch();
+      
+      await cardAutoMoveoutStyleHandler(TRANSITION_TIME, result, cardRef.current);
+      
+      handleGoToNextCard();
+      
+      // setTimeout(() => {
+      //   if (coverRef.current && cardRef.current) {
+      //     cardResetStyleHandler(coverRef.current, cardRef.current, false);
+      //   }
+      // }, 1000)
+      
       enableTouch();
     }
     else {
@@ -194,7 +203,7 @@ const WordCard = () => {
     }
 
     if (skipGradientRef.current && upgradeGradientRef.current && downgradeGradientRef.current) {
-      resetElementHandler(skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
+      resetHintElementHandler(skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
     }
   }, [handleGoToNextCard])
 
@@ -203,11 +212,13 @@ const WordCard = () => {
     onTouchEnd: handleCardTouchEnd,
   })
 
-  const backIndex = data.length > 1
+  const nextIndex = data.length > 1
   ? (curIndex === data.length - 1 ? 0 : curIndex + 1)
   : curIndex;
-  const backCard = data[backIndex];
-  const frontCard = data[curIndex];
+
+  const nextCard = data[nextIndex];
+  const currentCard = data[curIndex];
+  
   const isCardEmpty = data.length === 0;
 
   return (
@@ -223,7 +234,7 @@ const WordCard = () => {
         justifyContent: 'center',
         borderRadius: '50%',
         pointerEvents: 'none',
-        zIndex: '2',
+        zIndex: '3',
         mixBlendMode: 'hard-light',
         transition: 'opacity 0.2s ease-in-out',
         transform: 'translateY(60%)',
@@ -232,74 +243,74 @@ const WordCard = () => {
       }}>
         <div style={{
           position: 'relative',
-          top: '-120px',
+          top: '-80px',
           fontFamily: 'Roboto Condensed',
           fontSize: '16px',
           color: 'hsla(0, 0%, 100%, 1)',
           textAlign: 'center',
-        }}>It's on the tip of my tongue</div>
+        }}>Um...</div>
       </div>
       <div ref={downgradeGradientRef} style={{
         position: 'fixed',
         top: '0',
         left: '0',
         bottom: '0',
-        width: '160px',
+        width: '320px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: '50%',
         pointerEvents: 'none',
-        zIndex: '2',
+        zIndex: '3',
         mixBlendMode: 'hard-light',
         transition: 'opacity 0.2s ease-in-out',
-        transform: 'translateX(-60%)',
-        backgroundImage: 'radial-gradient(#3735ba 0%, rgba(77, 75, 215, .5) 22%,transparent 66%)',
+        transform: 'translateX(-50%)',
+        backgroundImage: 'radial-gradient(#8691bc 0%, rgba(141, 165, 200, 0.5) 22%,transparent 66%)',
         opacity: '0',
       }}>
         <div style={{
           position: 'relative',
-          right: '-48px',
+          right: '-30px',
           fontFamily: 'Roboto Condensed',
           fontSize: '18px',
           color: 'hsla(0, 0%, 100%, 1)',
           textAlign: 'center',
-          transform: 'rotate(90deg)',
           whiteSpace: 'nowrap'
-        }}>My mind went blank</div>
+        }}>Lost it</div>
       </div>
       <div ref={upgradeGradientRef} style={{
         position: 'fixed',
         top: '0',
         right: '0',
         bottom: '0',
-        width: '160px',
+        width: '320px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: '50%',
         pointerEvents: 'none',
-        zIndex: '2',
+        zIndex: '3',
         mixBlendMode: 'hard-light',
         transition: 'opacity 0.2s ease-in-out',
-        transform: 'translateX(60%)',
-        backgroundImage: 'radial-gradient(#b013c8 0%, rgba(176, 19, 200, .5) 22%,transparent 66%)',
+        transform: 'translateX(50%)',
+        backgroundImage: 'radial-gradient(#8691bc 0%, rgba(141, 165, 200, 0.5) 22%,transparent 66%)',
         opacity: '0',
       }}>
         <div style={{
           position: 'relative',
-          left: '-48px',
+          left: '-30px',
           fontFamily: 'Roboto Condensed',
           fontSize: '18px',
           color: 'hsla(0, 0%, 100%, 1)',
           textAlign: 'center',
-          transform: 'rotate(-90deg)',
           whiteSpace: 'nowrap'
-        }}>Totally get it</div>
+        }}>
+          Get it
+        </div>
       </div>
       <div id="CardTouch" style={{ position: 'relative' }}>
         {/* Front Card */}
-        <div style={{ position: 'relative', zIndex: '1' }}>
+        <div style={{ position: 'relative', zIndex: '2' }}>
           { isCardEmpty &&
             <div style={{
               display: "flex",
@@ -307,46 +318,46 @@ const WordCard = () => {
               justifyContent: "center",
               color: "#fff",
               opacity: "0.6",
-              maxWidth: "65vw",
-              maxHeight: "50vh",
+              maxWidth: "75vw",
+              maxHeight: "60vh",
               width: "300px",
               height: "450px",
             }}>
               No cards in this level.
             </div>
           }
-          { !isCardEmpty && frontCard &&
-            <CardWrapper3D>
+          { !isCardEmpty && currentCard &&
+            <CardWrapper3D key={curIndex}>
               <div ref={cardRef}>
                 <CardCover ref={coverRef} />
                 <CardBody
                   isEditable={!isOffline && !isDemo}
                   onEditClick={() => setIsUpdateWordOpen(true)}
-                  level={frontCard.level}
-                  word={frontCard.word}
-                  description={frontCard.description}
-                  instance={frontCard.instance}
-                  translation={frontCard.translation}
+                  level={currentCard.level}
+                  word={currentCard.word}
+                  description={currentCard.description}
+                  instance={currentCard.instance}
+                  translation={currentCard.translation}
                 />
               </div>
             </CardWrapper3D>
           }
         </div>
-        {/* Back Card */}
-        { !isCardEmpty && backCard &&
+        {/* Next Card */}
+        { !isCardEmpty && nextCard &&
           <div style={{
               position: 'absolute',
               left: '0',
               top: '0',
-              zIndex: '0',
+              zIndex: '1',
               pointerEvents: 'none'
             }}>
             <CardBody
-              level={backCard.level}
-              word={backCard.word}
-              description={backCard.description}
-              instance={backCard.instance}
-              translation={backCard.translation}
+              level={nextCard.level}
+              word={nextCard.word}
+              description={nextCard.description}
+              instance={nextCard.instance}
+              translation={nextCard.translation}
             />
           </div>
         }

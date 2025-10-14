@@ -60,7 +60,7 @@ interface CardBodyProps {
 
 const CARDSIZE = {
   width: '320px',
-  height: '450px',
+  height: '480px',
 }
 
 const levelBackgroundMap: { [key: number]: keyof typeof wordcardBackground } = {
@@ -75,7 +75,7 @@ const levelBackgroundMap: { [key: number]: keyof typeof wordcardBackground } = {
 const CardBody = ({ word, description, instance, translation, level, isEditable=false, onEditClick }: CardBodyProps) => {
   const backgroundKey = levelBackgroundMap[level] || 'level_1';
   return (
-    <div className="card" style={{ maxWidth: '65vw', maxHeight: '50vh', ...CARDSIZE, ...wordcardBackground[backgroundKey] }}>
+    <div className="card" style={{ maxWidth: '75vw', maxHeight: '60vh', ...CARDSIZE, ...wordcardBackground[backgroundKey] }}>
       <div className="inner">
         <div className="level">
           { level === 5 ?
