@@ -106,7 +106,7 @@ function resetHintElementHandler(skipElement: HTMLElement, upgradeElement: HTMLE
 
 const WordCard = () => {
   const { data } = useWordDataContext();
-  const { isOffline, isDemo } = useGlobalSettings();
+  const { isOffline } = useGlobalSettings();
   const [ curIndex, setCurIndex ] = useState(0);
   // const [ nextIndex, setNextIndex ] = useState(1);
   const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
