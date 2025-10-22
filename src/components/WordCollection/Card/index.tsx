@@ -216,7 +216,8 @@ const WordCard = () => {
     return () => {
       destroy();
     };
-  }, [destroy]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const nextIndex = data.length > 1
   ? (curIndex === data.length - 1 ? 0 : curIndex + 1)
