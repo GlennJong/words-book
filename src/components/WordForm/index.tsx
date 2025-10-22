@@ -140,7 +140,7 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
     }
 
     if (!loadedDict.current[first]) {
-      const words = await getData<string[]>(`/corpus/${first}.json`);
+      const words = await getData<string[]>(`./corpus/${first}.json`);
       loadedDict.current[first] = words || [];
     }
 

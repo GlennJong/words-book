@@ -9,11 +9,14 @@ interface TouchState {
 
 type TouchCallback = ((e: TouchEvent) => void) | null;
 
+
 interface useTouchProps {
   onTouchStart?: () => void;
   onTouchMove?: (props: TouchState) => void;
   onTouchEnd?: (props: TouchState) => void;
 }
+
+type MouseCallback = ((e: MouseEvent) => void) | null;
 
 const useTouch = (selectorId: string, { onTouchStart, onTouchMove, onTouchEnd }: useTouchProps) => {
   const stateRef = useRef<TouchState>({
@@ -24,12 +27,24 @@ const useTouch = (selectorId: string, { onTouchStart, onTouchMove, onTouchEnd }:
   });
 
   
+
   const handlersRef = useRef<{
     element: HTMLElement | null;
     handleTouchStart: TouchCallback;
     handleTouchMove: TouchCallback;
     handleTouchEnd: TouchCallback;
-  }>({ element: null, handleTouchStart: null, handleTouchMove: null, handleTouchEnd: null });
+    handleMouseDown: MouseCallback;
+    handleMouseMove: MouseCallback;
+    handleMouseUp: MouseCallback;
+  }>({
+    element: null,
+    handleTouchStart: null,
+    handleTouchMove: null,
+    handleTouchEnd: null,
+    handleMouseDown: null,
+    handleMouseMove: null,
+    handleMouseUp: null,
+  });
 
   const getHandlers = () => ({
     handleTouchStart: () => {
@@ -56,31 +71,82 @@ const useTouch = (selectorId: string, { onTouchStart, onTouchMove, onTouchEnd }:
       if (onTouchEnd) onTouchEnd(stateRef.current);
       stateRef.current.startAt = undefined;
       stateRef.current.delta = undefined;
-    }
+    },
+    // Mouse handlers
+    handleMouseDown: (e: MouseEvent) => {
+      if (!stateRef.current.active) return;
+      stateRef.current.startAt = [e.pageX, e.pageY];
+      stateRef.current.currentAt = [e.pageX, e.pageY];
+      stateRef.current.delta = [0, 0];
+      if (onTouchStart) onTouchStart();
+      window.addEventListener('mousemove', handlersRef.current.handleMouseMove!);
+      window.addEventListener('mouseup', handlersRef.current.handleMouseUp!);
+    },
+    handleMouseMove: (e: MouseEvent) => {
+      if (!stateRef.current.active || !stateRef.current.startAt) return;
+      stateRef.current.delta = [
+        e.pageX - stateRef.current.startAt[0],
+        e.pageY - stateRef.current.startAt[1],
+      ];
+      stateRef.current.currentAt = [e.pageX, e.pageY];
+      if (onTouchMove) onTouchMove(stateRef.current);
+    },
+    handleMouseUp: () => {
+      if (!stateRef.current.active) return;
+      if (onTouchEnd) onTouchEnd(stateRef.current);
+      stateRef.current.startAt = undefined;
+      stateRef.current.delta = undefined;
+      window.removeEventListener('mousemove', handlersRef.current.handleMouseMove!);
+      window.removeEventListener('mouseup', handlersRef.current.handleMouseUp!);
+    },
   });
 
   // 提取事件移除邏輯，避免重複
-  function removeAllListeners(element: HTMLElement | null, handleTouchStart: TouchCallback, handleTouchMove: TouchCallback, handleTouchEnd: TouchCallback) {
+  function removeAllListeners(
+    element: HTMLElement | null,
+    handleTouchStart: TouchCallback,
+    handleTouchMove: TouchCallback,
+    handleTouchEnd: TouchCallback,
+    handleMouseDown: MouseCallback
+  ) {
     if (!element) return;
     if (handleTouchStart) element.removeEventListener('touchstart', handleTouchStart);
     if (handleTouchMove) element.removeEventListener('touchmove', handleTouchMove);
     if (handleTouchEnd) element.removeEventListener('touchend', handleTouchEnd);
+    if (handleMouseDown) element.removeEventListener('mousedown', handleMouseDown);
   }
 
   useEffect(() => {
     const element = document.querySelector(selectorId) as HTMLElement | null;
     if (element) {
-      const { handleTouchStart, handleTouchMove, handleTouchEnd } = getHandlers();
+      const { handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown, handleMouseMove, handleMouseUp } = getHandlers();
       element.addEventListener('touchstart', handleTouchStart);
       element.addEventListener('touchmove', handleTouchMove);
       element.addEventListener('touchend', handleTouchEnd);
-      handlersRef.current = { element, handleTouchStart, handleTouchMove, handleTouchEnd };
+      element.addEventListener('mousedown', handleMouseDown);
+      handlersRef.current = {
+        element,
+        handleTouchStart,
+        handleTouchMove,
+        handleTouchEnd,
+        handleMouseDown,
+        handleMouseMove,
+        handleMouseUp
+      };
       return () => {
-        removeAllListeners(element, handleTouchStart, handleTouchMove, handleTouchEnd);
-        handlersRef.current = { element: null, handleTouchStart: null, handleTouchMove: null, handleTouchEnd: null };
+        removeAllListeners(element, handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown);
+        handlersRef.current = {
+          element: null,
+          handleTouchStart: null,
+          handleTouchMove: null,
+          handleTouchEnd: null,
+          handleMouseDown: null,
+          handleMouseMove: null,
+          handleMouseUp: null
+        };
       };
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectorId, onTouchEnd, onTouchMove, onTouchStart]);
 
   return {
@@ -90,9 +156,17 @@ const useTouch = (selectorId: string, { onTouchStart, onTouchMove, onTouchEnd }:
       stateRef.current.active = false;
       stateRef.current.startAt = undefined;
       stateRef.current.delta = undefined;
-      const { element, handleTouchStart, handleTouchMove, handleTouchEnd } = handlersRef.current;
-      removeAllListeners(element, handleTouchStart, handleTouchMove, handleTouchEnd);
-      handlersRef.current = { element: null, handleTouchStart: null, handleTouchMove: null, handleTouchEnd: null };
+      const { element, handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown } = handlersRef.current;
+      removeAllListeners(element, handleTouchStart, handleTouchMove, handleTouchEnd, handleMouseDown);
+      handlersRef.current = {
+        element: null,
+        handleTouchStart: null,
+        handleTouchMove: null,
+        handleTouchEnd: null,
+        handleMouseDown: null,
+        handleMouseMove: null,
+        handleMouseUp: null
+      };
     }
   };
 

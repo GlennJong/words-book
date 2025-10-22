@@ -207,10 +207,16 @@ const WordCard = () => {
     }
   }, [handleGoToNextCard])
 
-  const { disableTouch, enableTouch } = useTouch("#CardTouch", {
+  const { disableTouch, enableTouch, destroy } = useTouch("#CardTouch", {
     onTouchMove: handleCardTouchingStyle,
     onTouchEnd: handleCardTouchEnd,
-  })
+  });
+
+  useEffect(() => {
+    return () => {
+      destroy();
+    };
+  }, [destroy]);
 
   const nextIndex = data.length > 1
   ? (curIndex === data.length - 1 ? 0 : curIndex + 1)
