@@ -13,7 +13,7 @@ export async function getData<T>(url: string): Promise<T | undefined> {
   }
 }
 
-export async function postData<T>(url: string, body: T): Promise<T | undefined> {
+export async function postData<TRes = unknown, TBody = unknown>(url: string, body: TBody): Promise<TRes | undefined> {
   try {
     const response = await fetch(
       url,
@@ -29,7 +29,7 @@ export async function postData<T>(url: string, body: T): Promise<T | undefined> 
       throw new Error(`Response status: ${response.status}`);
     }
     const json = await response.json();
-    return json as T;
+    return json as TRes;
   } catch (error) {
     console.error(error);
     return undefined;

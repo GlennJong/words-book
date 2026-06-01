@@ -1,17 +1,11 @@
 import { useCallback, useEffect } from 'react';
 import useTouch from './useTouch';
 import { useWordDataContext } from '@/context/WordData/context';
-import { useGlobalSettings } from '@/context/GlobalSetting/context';
 
 const ACTIVE_Y = 120;
 
 const LevelSwiper = ({ disabled }: { disabled: boolean }) => {
-  const { setTheme } = useGlobalSettings();
-  const { level, upperLevel } = useWordDataContext();
-  useEffect(() => {
-    setTheme(`level_${level+1}` as "level_1" | "level_2" | "level_3" | "level_4" | "level_5" | "level_6");
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [level])
+  const { upperLevel } = useWordDataContext();
 
   const handleTouchMove = useCallback(function({ delta }: { delta?: number[] }) {
     if (!delta) return;

@@ -1,6 +1,6 @@
 import { getMockWordListData } from "@/mock";
 import { WordData } from "@/pages/MainScreen/type";
-import { getData, postData } from "@/utils/fetch";
+import { postData } from "@/utils/fetch";
 import { useEffect, useState, useRef, useMemo } from "react";
 
 const SEND_DEBOUNCE = 12 * 1000; // 12 seconds
@@ -14,7 +14,8 @@ async function getWordData(endpoint?: string, token?: string) {
       `&t=${Date.now().toString()}`;
 
     if (token) {
-      return await getData<WordData[]>(url);
+      const result = await postData<{status: string, data: WordData[]}>(url, { action: 'getWordList' });
+      if (result) return result.data;
     }
   } catch (error) {
     console.error(error);
@@ -80,6 +81,13 @@ export const useWordData = ({isDemo, isOffline, endpoint, token}: useWordDataPro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEnabled, isOffline]);
 
+  // Persist data to localStorage asynchronously so writes never block state updates
+  useEffect(() => {
+    if (!isFetched) return;
+    const id = setTimeout(() => localStorage.setItem(LOCAL_KEY, JSON.stringify(data)), 0);
+    return () => clearTimeout(id);
+  }, [data, isFetched]);
+
   const debounceTimer = useRef<number | null>(null);
 
   const triggerDebounce = () => {
@@ -120,12 +128,12 @@ export const useWordData = ({isDemo, isOffline, endpoint, token}: useWordDataPro
       :
       await getWordData(endpoint, token) ?? [];
 
+      console.log({wordList})
+
     if (wordList.length > 0) {
       setData(wordList);
       setShuffledIndexes(shuffleIndexes(wordList.length));
       setIsFetched(true);
-      
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(wordList));
     } else {
       setIsFetchError(true);
     }
@@ -134,29 +142,17 @@ export const useWordData = ({isDemo, isOffline, endpoint, token}: useWordDataPro
 
   const create = (word: WordData) => {
     pendingCreateRef.current = [...pendingCreateRef.current, word];
-    setData(prev => {
-      const newData = [...prev, word];
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(newData));
-      return newData;
-    });
+    setData(prev => [...prev, word]);
     triggerDebounce();
   };
   const update = (word: WordData) => {
     pendingUpdateRef.current = [...pendingUpdateRef.current, word];
-    setData(prev => {
-      const newData = prev.map(item => item.id === word.id ? { ...item, ...word } : item);
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(newData));
-      return newData;
-    });
+    setData(prev => prev.map(item => item.id === word.id ? { ...item, ...word } : item));
     triggerDebounce();
   };
   const remove = (word: WordData) => {
     pendingRemoveRef.current = [...pendingRemoveRef.current, word];
-    setData(prev => {
-      const newData = prev.filter(item => item.id !== word.id);
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(newData));
-      return newData;
-    });
+    setData(prev => prev.filter(item => item.id !== word.id));
     triggerDebounce();
   };
 
@@ -172,27 +168,24 @@ export const useWordData = ({isDemo, isOffline, endpoint, token}: useWordDataPro
 
   const sendCreate = async (words: WordData[]) => {
     if (isDemo || isOffline) return;
-    if (isEnabled) await postWordData('create', words, endpoint, token);
+    if (isEnabled) await postWordData('createWords', words, endpoint, token);
   };
   const sendUpdate = async (words: WordData[]) => {
     if (isDemo || isOffline) return;
-    if (isEnabled) await postWordData('update', words, endpoint, token);
+    if (isEnabled) await postWordData('updateWords', words, endpoint, token);
   };
   const sendRemove = async (words: WordData[]) => {
     if (isDemo || isOffline) return;
-    if (isEnabled) await postWordData('delete', words, endpoint, token);
+    if (isEnabled) await postWordData('deleteWords', words, endpoint, token);
   };
 
   const resultData = useMemo(() => {
-    let result = data;
+    // Shuffle the full dataset first, then filter — avoids out-of-bounds index mapping
+    const shuffled = shuffledIndexes.map(i => data[i]).filter((item): item is WordData => item !== undefined);
     if (isLevelMode) {
-      result = result.filter(item => item.level === currentLevel);
+      return shuffled.filter(item => item.level === currentLevel);
     }
-    else {
-      result = result.filter(item => item.level !== 5);
-    };
-
-    return shuffledIndexes.map(i => result[i]).filter(item => item !== undefined);
+    return shuffled.filter(item => item.level !== 5);
   }, [data, isLevelMode, shuffledIndexes, currentLevel]);
 
   return {

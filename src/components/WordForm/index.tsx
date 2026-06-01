@@ -29,7 +29,7 @@ async function postGenerateSentence(word: string, endpoint: string, token: strin
     const result = await postData(
       url,
       {
-        action: 'gen-ins',
+        action: 'getInstance',
         data: [word]
       }
     ) as unknown as GenerateWordResponse;
@@ -51,7 +51,7 @@ async function postGenerateDefinition(word: string, endpoint: string, token: str
     const result = await postData(
       url,
       {
-        action: 'gen-def',
+        action: 'getDefinition',
         data: [word]
       }
     ) as unknown as GenerateWordResponse;
@@ -79,6 +79,7 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
   const [isDefinitionGenerating, setIsDefinitionGenerating] = useState(false);
   
   const loadedDict = useRef<{ [key: string]: string[] }>({});
+  const searchTimerRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -124,29 +125,28 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
     setIsSentenceGenerating(false);
   }
 
-  const handleWordChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleWordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setWord(value);
-    if (!value) {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
+    setSuggestions([]);
+    setShowSuggestions(false);
+
+    if (searchTimerRef.current !== null) clearTimeout(searchTimerRef.current);
+
+    if (!value) return;
     const first = value[0]?.toLowerCase();
-    if (!first || !/^[a-z]$/.test(first)) {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
+    if (!first || !/^[a-z]$/.test(first)) return;
 
-    if (!loadedDict.current[first]) {
-      const words = await getData<string[]>(`./corpus/${first}.json`);
-      loadedDict.current[first] = words || [];
-    }
-
-    const list = loadedDict.current[first].filter(w => w.startsWith(value.toLowerCase())).slice(0, 10);
-    setSuggestions(list);
-    setShowSuggestions(list.length > 0);
+    // Debounce the corpus filter so it doesn't run on every keystroke
+    searchTimerRef.current = window.setTimeout(async () => {
+      if (!loadedDict.current[first]) {
+        const words = await getData<string[]>(`./corpus/${first}.json`);
+        loadedDict.current[first] = words || [];
+      }
+      const list = loadedDict.current[first].filter(w => w.startsWith(value.toLowerCase())).slice(0, 10);
+      setSuggestions(list);
+      setShowSuggestions(list.length > 0);
+    }, 150);
   };
 
   const handleSuggestionClick = (w: string) => {

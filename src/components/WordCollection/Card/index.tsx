@@ -40,7 +40,7 @@ function cardMovingHandler(delta: number[], coverElement: HTMLElement, cardEleme
     ${Math.min(Math.max(50 + delta[0], 0), 100)}%,
     ${Math.min(Math.max(50 + delta[1], 0), 100)}%
   `;
-  
+
   cardElement.style.transition = 'none';
   cardElement.style.transform = `
     translate(
@@ -53,7 +53,7 @@ function cardMovingHandler(delta: number[], coverElement: HTMLElement, cardEleme
 };
 
 function cardResetStyleHandler(coverElement: HTMLElement, cardElement: HTMLElement, enableTransition: boolean = true) {
-  coverElement.style.transition = enableTransition ? `all ${TRANSITION_TIME}ms ease-in-out` : 'none';
+  coverElement.style.transition = enableTransition ? `opacity ${TRANSITION_TIME}ms ease-in-out, transform ${TRANSITION_TIME}ms ease-in-out` : 'none';
   coverElement.style.opacity = `0`;
   coverElement.style.boxShadow = `inset 0px 0px 0px hsla(30, 100%, 80%, 0)`;
   coverElement.style.backgroundPosition = `50% 50%`;
@@ -77,7 +77,7 @@ function cardAutoMoveoutStyleHandler(time: number = 300, direction: 'left' | 'ri
       cardElement.style.opacity = '0';
       resolve();
     }, time);
-  })
+  });
 }
 
 function hintElementHandler(delta: number[], skipElement: HTMLElement, upgradeElement: HTMLElement, downgradeElement: HTMLElement) {
@@ -112,6 +112,7 @@ const WordCard = () => {
   const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
   // const { isOffline } = useGlobalSettings();
   const curIndexRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
   const skipGradientRef = useRef<HTMLDivElement>(null);
   const upgradeGradientRef = useRef<HTMLDivElement>(null);
   const downgradeGradientRef = useRef<HTMLDivElement>(null);
@@ -141,16 +142,19 @@ const WordCard = () => {
 
   const handleCardTouchingStyle = useCallback(function({ delta }: { delta?: number[] }) {
     if (!cardRef.current || !coverRef.current || !delta) return;
-    cardMovingHandler(delta, coverRef.current, cardRef.current);
-
-    if (skipGradientRef.current && upgradeGradientRef.current && downgradeGradientRef.current) {
-      if (Math.abs(delta[0]) > CARD_ACTIVE_X * 0.66 || Math.abs(delta[1]) > CARD_ACTIVE_Y * 0.66) {
-        hintElementHandler(delta, skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
+    // Cancel any pending frame so we never queue more than one paint per event burst
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      if (!cardRef.current || !coverRef.current || !delta) return;
+      cardMovingHandler(delta, coverRef.current, cardRef.current);
+      if (skipGradientRef.current && upgradeGradientRef.current && downgradeGradientRef.current) {
+        if (Math.abs(delta[0]) > CARD_ACTIVE_X * 0.66 || Math.abs(delta[1]) > CARD_ACTIVE_Y * 0.66) {
+          hintElementHandler(delta, skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
+        } else {
+          resetHintElementHandler(skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
+        }
       }
-      else {
-        resetHintElementHandler(skipGradientRef.current, upgradeGradientRef.current, downgradeGradientRef.current);
-      }
-    }
+    });
   }, []);
 
   const handleCardUpgrade = () => {
@@ -163,6 +167,11 @@ const WordCard = () => {
   }
   
   const handleCardTouchEnd = useCallback(async function({ delta }: { delta?: number[] }) {
+    // Cancel any rAF queued by the last touch-move so it doesn't clobber the flyout
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
     if (delta && delta.length > 0 && (Math.abs(delta[0]) > CARD_ACTIVE_X || Math.abs(delta[1]) > CARD_ACTIVE_Y)) {
       
       if (!coverRef.current || !cardRef.current) return;

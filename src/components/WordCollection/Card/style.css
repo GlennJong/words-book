@@ -82,6 +82,7 @@
   position: relative;
   margin: auto;
   overflow: hidden;
+  will-change: transform, opacity;
 }
 
 .card > .inner {
