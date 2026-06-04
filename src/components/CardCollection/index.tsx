@@ -1,0 +1,97 @@
+import { useEffect, useState } from 'react';
+import FullScreenPanel from '../FullScreenPanel';
+import LoadingAnimation from '../LoadingAnimation';
+import { useGlobalSettings } from '@/context/GlobalSetting/context';
+import LevelSwiper from './LevelSwiper';
+import { OrbitButton, NormalButton } from './Button';
+
+type CollectionContextType = {
+  isFetching: boolean;
+  isLevelMode: boolean;
+  setIsLevelMode: React.Dispatch<React.SetStateAction<boolean>>;
+  upperLevel: (delta: number) => void;
+  level: number;
+  shuffle: () => void;
+};
+
+type CardCollectionProps = {
+  CardComponent: React.ComponentType;
+  FormComponent: React.ComponentType<any>;
+  useCollectionContext: () => CollectionContextType;
+};
+
+const CardCollection = ({ CardComponent, FormComponent, useCollectionContext }: CardCollectionProps) => {
+  const { isOffline, setTheme, theme } = useGlobalSettings();
+  const { isFetching, isLevelMode, setIsLevelMode, upperLevel, level, shuffle } = useCollectionContext();
+
+  useEffect(() => {
+    setTheme(`level_${level + 1}` as "level_1" | "level_2" | "level_3" | "level_4" | "level_5" | "level_6");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [level]);
+
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: '5vh',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      {isOffline && (
+        <div style={{ position: 'fixed', bottom: '24px', left: '16px', color: '#fff', fontSize: '12px', fontFamily: 'Roboto Condensed' }}>
+          offline
+        </div>
+      )}
+      {isFetching && (
+        <div style={{ position: 'fixed', bottom: '24px', left: '16px', color: '#fff' }}>
+          <LoadingAnimation />
+        </div>
+      )}
+      <LevelSwiper disabled={isLevelMode} upperLevel={upperLevel} />
+      <CardComponent />
+      <div
+        style={{
+          display: 'flex',
+          gap: '12px',
+          position: 'fixed',
+          bottom: '48px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }}
+      >
+        <NormalButton disabled={isOffline} onClick={() => setIsCreateOpen(true)}>
+          +
+        </NormalButton>
+        <OrbitButton
+          onClick={() => {
+            if (!isLevelMode) {
+              setIsLevelMode(true);
+            }
+            if (level === 5) {
+              setIsLevelMode(false);
+            }
+            if (isLevelMode) {
+              upperLevel(1);
+            }
+          }}
+          style={{ background: isLevelMode ? `linear-gradient(135deg, ${theme.colors[0]}, ${theme.colors[1]}, ${theme.colors[2]})` : '#111' }}
+        >
+          {isLevelMode ? (level + 1) > 5 ? 'max' : level + 1 : 'mix'}
+        </OrbitButton>
+        <NormalButton onClick={() => shuffle()}>⟲</NormalButton>
+      </div>
+      <FullScreenPanel open={isCreateOpen} setOpen={setIsCreateOpen}>
+        <FormComponent mode="create" onConfirm={() => setIsCreateOpen(false)} />
+      </FullScreenPanel>
+    </div>
+  );
+};
+
+export default CardCollection;

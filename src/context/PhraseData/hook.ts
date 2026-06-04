@@ -1,12 +1,12 @@
 import { getMockWordListData } from "@/mock";
-import { WordData } from "@/pages/MainScreen/type";
+import { PhraseData } from "@/pages/MainScreen/type";
 import { postData } from "@/utils/fetch";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const SEND_DEBOUNCE = 12 * 1000; // 12 seconds
-const LOCAL_KEY = 'wordDataCache';
+const LOCAL_KEY = 'phraseDataCache';
 
-type useWordDataProps = {
+type usePhraseDataProps = {
   isDemo: boolean;
   isOffline: boolean;
   endpoint?: string;
@@ -21,36 +21,36 @@ const buildUrl = (endpoint?: string, token?: string) => {
   return `${endpoint}?${params.toString()}`;
 };
 
-async function getWordData(endpoint?: string, token?: string) {
+async function getPhraseData(endpoint?: string, token?: string) {
   try {
     const url = buildUrl(endpoint, token);
     if (!url || !token) return;
-    const result = await postData<{ status: string; data: WordData[] }>(url, { subject: 'word', action: 'getList' });
+    const result = await postData<{ status: string; data: PhraseData[] }>(url, { subject: 'phrase', action: 'getList' });
     return result?.data;
   } catch (error) {
     console.error(error);
   }
 }
 
-async function postWordData(action: string, words: WordData[], endpoint?: string, token?: string) {
+async function postPhraseData(action: string, phrases: PhraseData[], endpoint?: string, token?: string) {
   try {
     const url = buildUrl(endpoint, token);
     if (!url || !token) return;
-    await postData(url, { subject: 'word' ,action, data: words });
+    await postData(url, { subject: 'phrase', action, data: phrases });
   } catch (error) {
     console.error(error);
   }
 }
 
-export const useWordData = ({ isDemo, isOffline, endpoint, token }: useWordDataProps) => {
+export const usePhraseData = ({ isDemo, isOffline, endpoint, token }: usePhraseDataProps) => {
   const [isLevelMode, setIsLevelMode] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(0);
   const currentLevelRef = useRef(0);
-  const [data, setData] = useState<WordData[]>([]);
+  const [data, setData] = useState<PhraseData[]>([]);
   const [shuffledIndexes, setShuffledIndexes] = useState<number[]>([]);
-  const pendingCreateRef = useRef<WordData[]>([]);
-  const pendingUpdateRef = useRef<WordData[]>([]);
-  const pendingRemoveRef = useRef<WordData[]>([]);
+  const pendingCreateRef = useRef<PhraseData[]>([]);
+  const pendingUpdateRef = useRef<PhraseData[]>([]);
+  const pendingRemoveRef = useRef<PhraseData[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [isFetched, setIsFetched] = useState(false);
   const [isFetchError, setIsFetchError] = useState(false);
@@ -72,25 +72,25 @@ export const useWordData = ({ isDemo, isOffline, endpoint, token }: useWordDataP
   }, []);
 
   const sendCreate = useCallback(
-    async (words: WordData[]) => {
+    async (phrases: PhraseData[]) => {
       if (isDemo || isOffline) return;
-      if (isEnabled) await postWordData('create', words, endpoint, token);
+      if (isEnabled) await postPhraseData('create', phrases, endpoint, token);
     },
     [endpoint, isDemo, isEnabled, isOffline, token]
   );
 
   const sendUpdate = useCallback(
-    async (words: WordData[]) => {
+    async (phrases: PhraseData[]) => {
       if (isDemo || isOffline) return;
-      if (isEnabled) await postWordData('update', words, endpoint, token);
+      if (isEnabled) await postPhraseData('update', phrases, endpoint, token);
     },
     [endpoint, isDemo, isEnabled, isOffline, token]
   );
 
   const sendRemove = useCallback(
-    async (words: WordData[]) => {
+    async (phrases: PhraseData[]) => {
       if (isDemo || isOffline) return;
-      if (isEnabled) await postWordData('delete', words, endpoint, token);
+      if (isEnabled) await postPhraseData('delete', phrases, endpoint, token);
     },
     [endpoint, isDemo, isEnabled, isOffline, token]
   );
@@ -131,13 +131,13 @@ export const useWordData = ({ isDemo, isOffline, endpoint, token }: useWordDataP
     if (isOffline) return;
     setIsFetching(true);
 
-    const wordList = isDemo
+    const phraseList = isDemo
       ? await getMockWordListData(1000)
-      : (await getWordData(endpoint, token)) ?? [];
+      : (await getPhraseData(endpoint, token)) ?? [];
 
-    if (wordList.length > 0) {
-      setData(wordList);
-      setShuffledIndexes(shuffleIndexes(wordList.length));
+    if (phraseList.length > 0) {
+      setData(phraseList);
+      setShuffledIndexes(shuffleIndexes(phraseList.length));
       setIsFetched(true);
       setIsFetchError(false);
     } else {
@@ -151,9 +151,9 @@ export const useWordData = ({ isDemo, isOffline, endpoint, token }: useWordDataP
     if (isOffline) {
       const cached = localStorage.getItem(LOCAL_KEY);
       if (cached) {
-        const wordList = JSON.parse(cached) as WordData[];
-        setData(wordList);
-        setShuffledIndexes(shuffleIndexes(wordList.length));
+        const phraseList = JSON.parse(cached) as PhraseData[];
+        setData(phraseList);
+        setShuffledIndexes(shuffleIndexes(phraseList.length));
         setIsFetched(true);
         setIsFetchError(false);
       } else {
@@ -190,28 +190,28 @@ export const useWordData = ({ isDemo, isOffline, endpoint, token }: useWordDataP
     };
   }, [submitPending]);
 
-  const create = (word: WordData) => {
-    pendingCreateRef.current = [...pendingCreateRef.current, word];
-    setData((prev) => [...prev, word]);
+  const create = (phrase: PhraseData) => {
+    pendingCreateRef.current = [...pendingCreateRef.current, phrase];
+    setData((prev) => [...prev, phrase]);
     triggerDebounce();
   };
 
-  const update = (word: WordData) => {
-    pendingUpdateRef.current = [...pendingUpdateRef.current, word];
-    setData((prev) => prev.map((item) => (item.id === word.id ? { ...item, ...word } : item)));
+  const update = (phrase: PhraseData) => {
+    pendingUpdateRef.current = [...pendingUpdateRef.current, phrase];
+    setData((prev) => prev.map((item) => (item.id === phrase.id ? phrase : item)));
     triggerDebounce();
   };
 
-  const remove = (word: WordData) => {
-    pendingRemoveRef.current = [...pendingRemoveRef.current, word];
-    setData((prev) => prev.filter((item) => item.id !== word.id));
+  const remove = (phrase: PhraseData) => {
+    pendingRemoveRef.current = [...pendingRemoveRef.current, phrase];
+    setData((prev) => prev.filter((item) => item.id !== phrase.id));
     triggerDebounce();
   };
 
   const resultData = useMemo(() => {
     const shuffled = shuffledIndexes
       .map((i) => data[i])
-      .filter((item): item is WordData => item !== undefined);
+      .filter((item): item is PhraseData => item !== undefined);
 
     if (isLevelMode) {
       return shuffled.filter((item) => item.level === currentLevel);
@@ -220,24 +220,36 @@ export const useWordData = ({ isDemo, isOffline, endpoint, token }: useWordDataP
     return shuffled.filter((item) => item.level !== 5);
   }, [currentLevel, data, isLevelMode, shuffledIndexes]);
 
+  const upperLevel = useCallback((delta: number) => {
+    setCurrentLevel((prev) => {
+      const next = Math.min(5, Math.max(0, prev + delta));
+      currentLevelRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const shuffle = useCallback(() => {
+    setShuffledIndexes(() => shuffleIndexes(data.length));
+  }, [data.length, shuffleIndexes]);
+
   return {
     data: resultData,
-    isFetched,
-    isFetching,
-    isFetchError,
+    currentLevel,
     isLevelMode,
-    setIsLevelMode,
+    isEnabled,
+    isFetching,
+    isFetched,
+    isFetchError,
     level: currentLevel,
-    upperLevel: (number?: number) => {
-      const sumLevel = typeof number === 'number' ? number + currentLevelRef.current : currentLevelRef.current + 1;
-      const result = sumLevel > 5 ? sumLevel % 6 : sumLevel < 0 ? 5 : sumLevel;
-      setCurrentLevel(result);
-    },
+    upperLevel,
+    shuffle,
+    setIsLevelMode,
+    setCurrentLevel,
+    setData,
+    refetch: get,
     create,
     update,
     remove,
-    shuffle: () => setShuffledIndexes(shuffleIndexes(data.length)),
-    submitPending,
-    refetch: get,
+    shuffledIndexes,
   };
 };

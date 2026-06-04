@@ -6,3 +6,5 @@ export type WordData = {
   instance: string;
   translation: string;
 }
+
+export type PhraseData = WordData;

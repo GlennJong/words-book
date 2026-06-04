@@ -12,7 +12,7 @@ export const GlobalSettings = createContext<GlobalSettingsType | null>(null);
 
 export const useGlobalSettings = () => {
   const context = useContext(GlobalSettings);
-  if (!context) throw new Error('useGlobalSettings must be used within a WordDataProvider');
+  if (!context) throw new Error('useGlobalSettings must be used within a GlobalSettingsProvider');
   return context;
 };
 

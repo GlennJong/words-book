@@ -2,10 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import CardCover from './CardCover';
 import CardBody from './CardBody';
 import useTouch from '../useTouch';
-import { useWordDataContext } from '@/context/WordData/context';
 import FullScreenPanel from '@/components/FullScreenPanel';
-import WordForm from '@/components/WordForm';
+import CardForm from '@/components/CardForm';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
+import { WordData } from '@/pages/MainScreen/type';
 
 const CARD_ACTIVE_X = 100;
 const CARD_ACTIVE_Y = 150;
@@ -104,13 +104,15 @@ function resetHintElementHandler(skipElement: HTMLElement, upgradeElement: HTMLE
   downgradeElement.style.opacity = '0';
 }
 
-const WordCard = () => {
-  const { data } = useWordDataContext();
+type CardProps = {
+  data: WordData[];
+  update: (card: WordData) => void;
+};
+
+const WordCard = ({ data, update }: CardProps) => {
   const { isOffline } = useGlobalSettings();
   const [ curIndex, setCurIndex ] = useState(0);
-  // const [ nextIndex, setNextIndex ] = useState(1);
   const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
-  // const { isOffline } = useGlobalSettings();
   const curIndexRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
   const skipGradientRef = useRef<HTMLDivElement>(null);
@@ -126,8 +128,6 @@ const WordCard = () => {
   const coverRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const { update: updateWord } = useWordDataContext();
-  
   const handleGoToNextCard = useCallback((func?: () => void) => {
     setCurIndex(prev => {
       let next = prev + 1;
@@ -159,11 +159,11 @@ const WordCard = () => {
 
   const handleCardUpgrade = () => {
     const current = data[curIndexRef.current];
-    updateWord({...current, level: Math.min(5, current.level + 1)});
+    update({...current, level: Math.min(5, current.level + 1)});
   }
   const handleCardDowngrade = () => {
     const current = data[curIndexRef.current];
-    updateWord({...current, level: Math.max(0, current.level -1)});
+    update({...current, level: Math.max(0, current.level - 1)});
   }
   
   const handleCardTouchEnd = useCallback(async function({ delta }: { delta?: number[] }) {
@@ -380,7 +380,15 @@ const WordCard = () => {
       </div>
 
       <FullScreenPanel open={isUpdateWordOpen} setOpen={setIsUpdateWordOpen}>
-        <WordForm mode="edit" data={data[curIndex]} onConfirm={() => setIsUpdateWordOpen(false)} />
+        <CardForm
+          mode="edit"
+          data={data[curIndex]}
+          onConfirm={() => setIsUpdateWordOpen(false)}
+          title="Word"
+          subject="word"
+          create={update}
+          update={update}
+        />
       </FullScreenPanel>
     </>
   )

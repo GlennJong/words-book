@@ -1,16 +1,15 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { getData, postData } from '@/utils/fetch';
-import './style.css';
-import { useWordDataContext } from '@/context/WordData/context';
-import { WordData } from '@/pages/MainScreen/type';
+import '../CardForm/style.css';
+import { usePhraseDataContext } from '@/context/PhraseData/context';
+import { PhraseData } from '@/pages/MainScreen/type';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
 import LoadingAnimation from '../LoadingAnimation';
 import { getMockGenDefinition, getMockGenSentence } from '@/mock';
 
-type WordFormProps = {
+type PhraseFormProps = {
   mode: 'create' | 'edit';
-  data?: WordData;
+  data?: PhraseData;
   onConfirm: () => void;
 }
 
@@ -29,6 +28,7 @@ async function postGenerateSentence(word: string, endpoint: string, token: strin
     const result = await postData(
       url,
       {
+        subject: 'phrase',
         action: 'getInstance',
         data: [word]
       }
@@ -51,6 +51,7 @@ async function postGenerateDefinition(word: string, endpoint: string, token: str
     const result = await postData(
       url,
       {
+        subject: 'phrase',
         action: 'getDefinition',
         data: [word]
       }
@@ -64,9 +65,9 @@ async function postGenerateDefinition(word: string, endpoint: string, token: str
   }
 }
 
-const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
+const PhraseForm = ({ mode, data, onConfirm }: PhraseFormProps) => {
   const { isDemo, endpoint, token } = useGlobalSettings();
-  const { create, update } = useWordDataContext()
+  const { create, update } = usePhraseDataContext();
   const [word, setWord] = useState(mode === 'create' ? '' : data?.word);
   const [decription, setDescription] = useState(mode === 'create' ? '' : data?.description);
   const [instance, setInstance] = useState(mode === 'create' ? '' : data?.instance);
@@ -104,7 +105,6 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
   const handleGenerateDefenition = async () => {
     if (!endpoint || !token || !word) return;
     setIsDefinitionGenerating(true);
-    // TODO: demo
     const result = isDemo ?
       await getMockGenDefinition(word, 1000)
       :
@@ -116,7 +116,6 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
   const handleGenerateInstance = async () => {
     if (!endpoint || !token || !word) return;
     setIsSentenceGenerating(true);
-    // TODO: demo
     const result =  isDemo ?
       await getMockGenSentence(word, 1000)
       :
@@ -137,7 +136,6 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
     const first = value[0]?.toLowerCase();
     if (!first || !/^[a-z]$/.test(first)) return;
 
-    // Debounce the corpus filter so it doesn't run on every keystroke
     searchTimerRef.current = window.setTimeout(async () => {
       if (!loadedDict.current[first]) {
         const words = await getData<string[]>(`./corpus/${first}.json`);
@@ -165,10 +163,10 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
     }
     switch (mode) {
       case 'create':
-        create(newData as WordData)
+        create(newData as PhraseData)
         break;
       case 'edit':
-        update(newData as WordData)
+        update(newData as PhraseData)
         break;
     }
     onConfirm();
@@ -181,7 +179,7 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div className="form">
           <div>
-            <div className="subtitle">Word</div>
+            <div className="subtitle">Phrase</div>
             <div className="input-container" style={{ position: 'relative' }}>
               <input
                 ref={inputRef}
@@ -250,4 +248,4 @@ const WordForm = ({ mode, data, onConfirm }: WordFormProps) => {
   );
 }
 
-export default WordForm;
+export default PhraseForm;
