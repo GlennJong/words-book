@@ -105,7 +105,7 @@ type CardProps<T extends { level: number }> = {
   data: T[];
   update: (card: T) => void;
   body: React.ComponentType<any>;
-  FormComponent?: React.ComponentType<{ mode: 'edit'; data?: T; onConfirm: () => void }>;
+  FormComponent?: React.ComponentType<{ mode: 'create' | 'edit'; data?: T; onConfirm: () => void }>;
 };
 
 const Card = <T extends { level: number }>({ data, update, body: Body, FormComponent }: CardProps<T>) => {

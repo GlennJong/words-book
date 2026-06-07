@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from 'react';
-import './style.css';
+import '@/components/CardCollection/Card/style.css';
 
 const cardBackgroundImages = [
   '/images/card_1.svg',
@@ -113,25 +113,43 @@ const CardBody = ({ title, explain, level, words, not_matched, synonyms, isEdita
         <div
           className="word"
           style={{
+            marginBottom: '4px',
             fontSize: title.length > 10 ? '14px' : '18px',
           }}
         >{ title }</div>
+        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px', }}>
+          { words.map(word => 
+            <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 4px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', color: '#fff', fontSize: '12px' }}>
+              { word }
+            </div>
+          )}
+        </div>
         <Fragment key={title}>
           { formattedExplain &&
-            <div className="content">{ formattedExplain }</div>
-          }
-          { words.length > 0 &&
-            <div className="content">
-              <span>words:</span> { words.join(', ') }
+            <div style={{
+                color: '#fff',
+                fontSize: '12px',
+                whiteSpace: 'break-spaces'
+              }}
+            >
+              { formattedExplain }
             </div>
           }
           { not_matched.length > 0 &&
-            <div className="content">
+            <div style={{
+              color: '#fff',
+              fontSize: '12px',
+              whiteSpace: 'break-spaces'
+            }}>
               <span>misreads:</span> { not_matched.join(', ') }
             </div>
           }
           { synonyms.length > 0 &&
-            <div className="content">
+            <div style={{
+              color: '#fff',
+              fontSize: '12px',
+              whiteSpace: 'break-spaces'
+            }}>
               <span>synonyms:</span> { synonyms.join(', ') }
             </div>
           }

@@ -1,32 +1,19 @@
-import CardCollection from '@/components/CardCollection';
-import Card from '@/components/CardCollection/Card';
-import CardForm from '@/components/CardForm';
+import { createCollection } from '@/components/CardCollection/collectionFactory';
+import PhraseForm from './Form';
 import { usePhraseDataContext } from '@/context/PhraseData/context';
 import { PhraseData } from '@/pages/MainScreen/type';
 import CardBody from './CardBody';
 
-const PhraseCollection = () => {
-  const { create, update, data } = usePhraseDataContext();
-
-  const FormComponent = (props: { mode: 'create' | 'edit'; data?: PhraseData; onConfirm: () => void }) => (
-    <CardForm<PhraseData>
+const PhraseCollection = createCollection<PhraseData>({
+  useCollectionContext: usePhraseDataContext,
+  CardBody,
+  FormFactory: ({ create, update }) => (props) => (
+    <PhraseForm
       {...props}
-      title="Phrase"
-      subject="phrase"
       create={create}
       update={update}
     />
-  );
-
-  const WrappedCard = () => <Card data={data} update={update} body={CardBody} FormComponent={FormComponent} />;
-
-  return (
-    <CardCollection
-      CardComponent={WrappedCard}
-      FormComponent={FormComponent}
-      useCollectionContext={usePhraseDataContext}
-    />
-  );
-};
+  ),
+});
 
 export default PhraseCollection;

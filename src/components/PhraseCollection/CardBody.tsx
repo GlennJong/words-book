@@ -25,7 +25,6 @@ const wordcardBackground = {
     backgroundPosition: '50% 50%',
     backgroundRepeat: 'no-repeat',
     backgroundSize: '104% auto',
-
   },
   level_3: {
     backgroundColor: '#41274C',
@@ -54,8 +53,8 @@ const wordcardBackground = {
     backgroundPosition: '50% 50%',
     backgroundRepeat: 'no-repeat',
     backgroundSize: '104% auto',
-  }
-}
+  },
+};
 
 interface CardBodyProps {
   word: string;
@@ -70,7 +69,7 @@ interface CardBodyProps {
 const CARDSIZE = {
   width: '320px',
   height: '480px',
-}
+};
 
 const levelBackgroundMap: { [key: number]: keyof typeof wordcardBackground } = {
   0: 'level_1',
@@ -81,7 +80,7 @@ const levelBackgroundMap: { [key: number]: keyof typeof wordcardBackground } = {
   5: 'level_max',
 };
 
-const CardBody = ({ word, description, instance, translation, level, isEditable=false, onEditClick }: CardBodyProps) => {
+const CardBody = ({ word, description, instance, translation, level, isEditable = false, onEditClick }: CardBodyProps) => {
   const backgroundKey = levelBackgroundMap[level] || 'level_1';
 
   useEffect(() => {
@@ -96,25 +95,21 @@ const CardBody = ({ word, description, instance, translation, level, isEditable=
     <div className="card" style={{ maxWidth: '75vw', maxHeight: '60vh', ...CARDSIZE, ...wordcardBackground[backgroundKey] }}>
       <div className="inner">
         <div className="level">
-          { level === 5 ?
-            <span>max</span>
-            :
-            <span>{ level+1 }.</span>
-          }
+          {level === 5 ? <span>max</span> : <span>{level + 1}.</span>}
         </div>
-        { isEditable &&
-          <div className="edit"
-            onClick={onEditClick}
-          >
+        {isEditable && (
+          <div className="edit" onClick={onEditClick}>
             ✎
           </div>
-        }
+        )}
         <div
           className="word"
           style={{
             fontSize: word.length > 10 ? '24px' : '30px',
           }}
-        >{ word }</div>
+        >
+          {word}
+        </div>
         <Fragment key={word}>
           <ExtendExtraContent data={description} title="Description" />
           <ExtendExtraContent data={instance} title="Sentence" />
@@ -122,26 +117,24 @@ const CardBody = ({ word, description, instance, translation, level, isEditable=
         </Fragment>
       </div>
     </div>
-  )
-}
+  );
+};
 
-const ExtendExtraContent = ({ data, title }: { data: string, title: string }) => {
-  const [ isShow, setIsShow ] = useState(false);
+const ExtendExtraContent = ({ data, title }: { data: string; title: string }) => {
+  const [isShow, setIsShow] = useState(false);
   if (!data) return null;
   return (
     <div className="extra">
-      { isShow ?
-        <span>
-          { data }
-        </span>
-        :
+      {isShow ? (
+        <span>{data}</span>
+      ) : (
         <button onClick={() => setIsShow(!isShow)}>
           <Book />
-          <span>{ title }</span>
+          <span>{title}</span>
         </button>
-      }
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default CardBody;

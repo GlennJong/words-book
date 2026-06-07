@@ -5,7 +5,7 @@ import { useGlobalSettings } from '@/context/GlobalSetting/context';
 import LevelSwiper from './LevelSwiper';
 import { OrbitButton, NormalButton } from './Button';
 
-type CollectionContextType = {
+export type CollectionContextType = {
   isFetching: boolean;
   isLevelMode: boolean;
   setIsLevelMode: React.Dispatch<React.SetStateAction<boolean>>;
