@@ -1,11 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import CardCover from './CardCover';
-import CardBody from './CardBody';
 import useTouch from '../useTouch';
 import FullScreenPanel from '@/components/FullScreenPanel';
-import CardForm from '@/components/CardForm';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
-import { WordData } from '@/pages/MainScreen/type';
 
 const CARD_ACTIVE_X = 100;
 const CARD_ACTIVE_Y = 150;
@@ -104,12 +101,14 @@ function resetHintElementHandler(skipElement: HTMLElement, upgradeElement: HTMLE
   downgradeElement.style.opacity = '0';
 }
 
-type CardProps = {
-  data: WordData[];
-  update: (card: WordData) => void;
+type CardProps<T extends { level: number }> = {
+  data: T[];
+  update: (card: T) => void;
+  body: React.ComponentType<any>;
+  FormComponent?: React.ComponentType<{ mode: 'edit'; data?: T; onConfirm: () => void }>;
 };
 
-const WordCard = ({ data, update }: CardProps) => {
+const Card = <T extends { level: number }>({ data, update, body: Body, FormComponent }: CardProps<T>) => {
   const { isOffline } = useGlobalSettings();
   const [ curIndex, setCurIndex ] = useState(0);
   const [ isUpdateWordOpen, setIsUpdateWordOpen ] = useState(false);
@@ -159,11 +158,11 @@ const WordCard = ({ data, update }: CardProps) => {
 
   const handleCardUpgrade = () => {
     const current = data[curIndexRef.current];
-    update({...current, level: Math.min(5, current.level + 1)});
+    update({ ...current, level: Math.min(5, current.level + 1) });
   }
   const handleCardDowngrade = () => {
     const current = data[curIndexRef.current];
-    update({...current, level: Math.max(0, current.level - 1)});
+    update({ ...current, level: Math.max(0, current.level - 1) });
   }
   
   const handleCardTouchEnd = useCallback(async function({ delta }: { delta?: number[] }) {
@@ -236,6 +235,12 @@ const WordCard = ({ data, update }: CardProps) => {
   const currentCard = data[curIndex];
   
   const isCardEmpty = data.length === 0;
+
+  const openEditPanel = () => {
+    if (FormComponent) {
+      setIsUpdateWordOpen(true);
+    }
+  };
 
   return (
     <>
@@ -346,14 +351,10 @@ const WordCard = ({ data, update }: CardProps) => {
             <CardWrapper3D key={curIndex}>
               <div ref={cardRef}>
                 <CardCover ref={coverRef} />
-                <CardBody
-                  isEditable={!isOffline}
-                  onEditClick={() => setIsUpdateWordOpen(true)}
-                  level={currentCard.level}
-                  word={currentCard.word}
-                  description={currentCard.description}
-                  instance={currentCard.instance}
-                  translation={currentCard.translation}
+                <Body
+                  {...currentCard}
+                  isEditable={Boolean(FormComponent) && !isOffline}
+                  onEditClick={openEditPanel}
                 />
               </div>
             </CardWrapper3D>
@@ -368,28 +369,19 @@ const WordCard = ({ data, update }: CardProps) => {
               zIndex: '1',
               pointerEvents: 'none'
             }}>
-            <CardBody
-              level={nextCard.level}
-              word={nextCard.word}
-              description={nextCard.description}
-              instance={nextCard.instance}
-              translation={nextCard.translation}
-            />
+              <Body
+                {...nextCard}
+                isEditable={false}
+              />
           </div>
         }
       </div>
 
-      <FullScreenPanel open={isUpdateWordOpen} setOpen={setIsUpdateWordOpen}>
-        <CardForm
-          mode="edit"
-          data={data[curIndex]}
-          onConfirm={() => setIsUpdateWordOpen(false)}
-          title="Word"
-          subject="word"
-          create={update}
-          update={update}
-        />
-      </FullScreenPanel>
+      {FormComponent && (
+        <FullScreenPanel open={isUpdateWordOpen} setOpen={setIsUpdateWordOpen}>
+          <FormComponent mode="edit" data={data[curIndex]} onConfirm={() => setIsUpdateWordOpen(false)} />
+        </FullScreenPanel>
+      )}
     </>
   )
 };
@@ -403,4 +395,4 @@ const CardWrapper3D = ({ children }: { children: React.ReactNode }) => (
   </div>
 )
 
-export default WordCard;
+export default Card;

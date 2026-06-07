@@ -8,3 +8,13 @@ export type WordData = {
 }
 
 export type PhraseData = WordData;
+
+export type ComparisonData = {
+  id: number;
+  title: string,
+  words: string[];
+  explain: string,
+  not_matched: string[];
+  synonyms: string[];
+  level: number;
+}

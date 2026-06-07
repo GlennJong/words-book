@@ -1,9 +1,17 @@
-import { WordData } from "./pages/MainScreen/type";
+import { ComparisonData, WordData } from "./pages/MainScreen/type";
 
 export const getMockWordListData = (time: number): Promise<WordData[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(mockdata.wordList);
+    }, time);
+  })
+}
+
+export const getMockComparisonListData = (time: number): Promise<ComparisonData[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockdata.comparisonList);
     }, time);
   })
 }
@@ -36,6 +44,7 @@ export const mockdata: {
   genDefinition: { [key: string]: string[] }
   genSentence: { [key: string]: string[] }
   wordList: WordData[]
+  comparisonList: ComparisonData[]
 } = {
   genDefinition: {
     solicit: [ "verb. ask earnestly", "verb. plead for business" ],
@@ -181,6 +190,17 @@ export const mockdata: {
         "instance": "This kind of thing can reconcile you to camping.",
         "translation": "調停",
         "level": 0
+    }
+  ],
+  comparisonList: [
+    {
+      id: 0,
+      title: 'example',
+      words: ['word1', 'word2'],
+      explain: 'explain content...',
+      not_matched: ['word3', 'word4'],
+      synonyms: ['word5', 'word6'],
+      level: 1
     }
   ]
 }

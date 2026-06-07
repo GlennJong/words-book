@@ -3,12 +3,13 @@ import Card from '@/components/CardCollection/Card';
 import CardForm from '@/components/CardForm';
 import { usePhraseDataContext } from '@/context/PhraseData/context';
 import { PhraseData } from '@/pages/MainScreen/type';
+import CardBody from './CardBody';
 
 const PhraseCollection = () => {
   const { create, update, data } = usePhraseDataContext();
 
   const FormComponent = (props: { mode: 'create' | 'edit'; data?: PhraseData; onConfirm: () => void }) => (
-    <CardForm
+    <CardForm<PhraseData>
       {...props}
       title="Phrase"
       subject="phrase"
@@ -17,7 +18,7 @@ const PhraseCollection = () => {
     />
   );
 
-  const WrappedCard = () => <Card data={data} update={update} />;
+  const WrappedCard = () => <Card data={data} update={update} body={CardBody} FormComponent={FormComponent} />;
 
   return (
     <CardCollection

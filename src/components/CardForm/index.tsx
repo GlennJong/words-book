@@ -1,19 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { getData, postData } from '@/utils/fetch';
 import './style.css';
-import { WordData } from '@/pages/MainScreen/type';
+import { WordData as DefaultWordData } from '@/pages/MainScreen/type';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
 import LoadingAnimation from '../LoadingAnimation';
 import { getMockGenDefinition, getMockGenSentence } from '@/mock';
 
-type CardFormProps = {
+type CardFormProps<T extends DefaultWordData = DefaultWordData> = {
   mode: 'create' | 'edit';
-  data?: WordData;
+  data?: T;
   onConfirm: () => void;
   title: string;
   subject: 'word' | 'phrase';
-  create: (card: WordData) => void;
-  update: (card: WordData) => void;
+  create: (card: T) => void;
+  update: (card: T) => void;
 }
 
 type GenerateWordResponse = {
@@ -68,7 +68,7 @@ async function postGenerateDefinition(word: string, endpoint: string, token: str
   }
 }
 
-const CardForm = ({
+function CardForm<T extends DefaultWordData = DefaultWordData>({
   mode,
   data,
   onConfirm,
@@ -76,7 +76,7 @@ const CardForm = ({
   subject,
   create,
   update,
-}: CardFormProps) => {
+}: CardFormProps<T>) {
   const { isDemo, endpoint, token } = useGlobalSettings();
   const [word, setWord] = useState(mode === 'create' ? '' : data?.word);
   const [decription, setDescription] = useState(mode === 'create' ? '' : data?.description);
@@ -169,13 +169,13 @@ const CardForm = ({
       description: decription || '',
       instance: instance || '',
       translation: translation || '',
-    };
+    } as T;
     switch (mode) {
       case 'create':
-        create(newData as WordData);
+        create(newData);
         break;
       case 'edit':
-        update(newData as WordData);
+        update(newData);
         break;
     }
     onConfirm();

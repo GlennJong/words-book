@@ -3,12 +3,13 @@ import Card from '@/components/CardCollection/Card';
 import CardForm from '@/components/CardForm';
 import { useWordDataContext } from '@/context/WordData/context';
 import { WordData } from '@/pages/MainScreen/type';
+import CardBody from './CardBody';
 
 const WordCollection = () => {
   const { create, update, data } = useWordDataContext();
 
   const FormComponent = (props: { mode: 'create' | 'edit'; data?: WordData; onConfirm: () => void }) => (
-    <CardForm
+    <CardForm<WordData>
       {...props}
       title="Word"
       subject="word"
@@ -17,7 +18,7 @@ const WordCollection = () => {
     />
   );
 
-  const WrappedCard = () => <Card data={data} update={update} />;
+  const WrappedCard = () => <Card data={data} update={update} body={CardBody} FormComponent={FormComponent} />;
 
   return (
     <CardCollection
