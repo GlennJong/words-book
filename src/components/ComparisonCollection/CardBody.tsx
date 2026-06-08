@@ -2,25 +2,25 @@ import { Fragment, useEffect } from 'react';
 import '@/components/CardCollection/Card/style.css';
 
 const cardBackgroundImages = [
-  '/images/card_1.svg',
-  '/images/card_2.svg',
-  '/images/card_3.svg',
-  '/images/card_4.svg',
-  '/images/card_5.svg',
-  '/images/card_max.svg',
+  'images/card_1.svg',
+  'images/card_2.svg',
+  'images/card_3.svg',
+  'images/card_4.svg',
+  'images/card_5.svg',
+  'images/card_max.svg',
 ];
 
 const wordcardBackground = {
   level_1: {
     backgroundColor: '#28525B',
-    backgroundImage: `url('/images/card_1.svg')`,
+    backgroundImage: `url('images/card_1.svg')`,
     backgroundPosition: '50% 50%',
     backgroundRepeat: 'no-repeat',
     backgroundSize: '104% auto',
   },
   level_2: {
     backgroundColor: '#2d295b',
-    backgroundImage: `url('/images/card_2.svg')`,
+    backgroundImage: `url('images/card_2.svg')`,
     backgroundPosition: '50% 50%',
     backgroundRepeat: 'no-repeat',
     backgroundSize: '104% auto',
@@ -28,28 +28,28 @@ const wordcardBackground = {
   },
   level_3: {
     backgroundColor: '#41274C',
-    backgroundImage: `url('/images/card_3.svg')`,
+    backgroundImage: `url('images/card_3.svg')`,
     backgroundPosition: '50% 50%',
     backgroundRepeat: 'no-repeat',
     backgroundSize: '104% auto',
   },
   level_4: {
     backgroundColor: '#28BBD2',
-    backgroundImage: `url('/images/card_4.svg')`,
+    backgroundImage: `url('images/card_4.svg')`,
     backgroundPosition: '50% 50%',
     backgroundRepeat: 'no-repeat',
     backgroundSize: '104% auto',
   },
   level_5: {
     backgroundColor: '#2C285B',
-    backgroundImage: `url('/images/card_5.svg')`,
+    backgroundImage: `url('images/card_5.svg')`,
     backgroundPosition: '50% 50%',
     backgroundRepeat: 'no-repeat',
     backgroundSize: '104% auto',
   },
   level_max: {
     backgroundColor: '#A797FC',
-    backgroundImage: `url('/images/card_max.svg')`,
+    backgroundImage: `url('images/card_max.svg')`,
     backgroundPosition: '50% 50%',
     backgroundRepeat: 'no-repeat',
     backgroundSize: '104% auto',
@@ -119,7 +119,7 @@ const CardBody = ({ title, explain, level, words, not_matched, synonyms, isEdita
         >{ title }</div>
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px', }}>
           { words.map(word => 
-            <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 4px', borderRadius: '6px', background: 'rgba(255,255,255,0.08)', color: '#fff', fontSize: '12px' }}>
+            <div className="tag">
               { word }
             </div>
           )}

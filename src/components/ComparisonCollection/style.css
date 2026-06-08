@@ -131,6 +131,16 @@
   filter: invert(1) drop-shadow(0 0 2px #0008);
 }
 
+.card > .inner .tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Roboto Condensed';
+  padding: 2px 4px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 12px
+}
 .card > .inner > .content {
   color: #fff;
   font-size: 12px;
