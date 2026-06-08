@@ -28,7 +28,7 @@ export function createCollection<T extends { level: number }>(config: Collection
     const FormComponent = useMemo(() => config.FormFactory({ create, update, data }), [create, update, data]);
     const WrappedCard = useMemo(
       () => () => <Card data={data} update={update} body={config.CardBody} FormComponent={FormComponent} />,
-      [data, update, FormComponent, config.CardBody],
+      [data, update, FormComponent],
     );
 
     return (

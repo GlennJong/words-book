@@ -3,7 +3,7 @@ import { getData } from '@/utils/fetch';
 import '@/components/CardForm/style.css';
 import { WordData } from '@/pages/MainScreen/type';
 import LoadingAnimation from '@/components/LoadingAnimation';
-import { getMockGenDefinition, getMockGenSentence } from '@/mock';
+import { useGenerateText } from '@/utils/api';
 
 type WordFormProps = {
   mode: 'create' | 'edit';
@@ -29,6 +29,8 @@ function WordForm({ mode, data, onConfirm, create, update }: WordFormProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
+  const generate = useGenerateText();
+
   useEffect(() => {
     if (!showSuggestions) return;
     const handleClick = (e: MouseEvent) => {
@@ -45,14 +47,14 @@ function WordForm({ mode, data, onConfirm, create, update }: WordFormProps) {
 
   const handleGenerateDefinition = async () => {
     setIsDefinitionGenerating(true);
-    const result = await getMockGenDefinition(word, 1000);
+    const result = await generate(word, 'word', 'getDefinition');
     if (result) setDescription(result);
     setIsDefinitionGenerating(false);
   };
 
   const handleGenerateInstance = async () => {
     setIsSentenceGenerating(true);
-    const result = await getMockGenSentence(word, 1000);
+    const result = await generate(word, 'word', 'getInstance');
     if (result) setInstance(result);
     setIsSentenceGenerating(false);
   };

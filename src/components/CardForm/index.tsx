@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getData, postData } from '@/utils/fetch';
+import { getData } from '@/utils/fetch';
 import './style.css';
 import { WordData as DefaultWordData } from '@/pages/MainScreen/type';
-import { useGlobalSettings } from '@/context/GlobalSetting/context';
+import { useGenerateText } from '@/utils/api';
 import LoadingAnimation from '../LoadingAnimation';
-import { getMockGenDefinition, getMockGenSentence } from '@/mock';
 
 type CardFormProps<T extends DefaultWordData = DefaultWordData> = {
   mode: 'create' | 'edit';
@@ -14,59 +13,7 @@ type CardFormProps<T extends DefaultWordData = DefaultWordData> = {
   subject: 'word' | 'phrase';
   create: (card: T) => void;
   update: (card: T) => void;
-}
-
-type GenerateWordResponse = {
-  status: string;
-  message: string;
-  data: string;
 };
-
-async function postGenerateSentence(word: string, endpoint: string, token: string, subject: string) {
-  try {
-    const url = `${endpoint}` +
-      `?token=${token}` +
-      `&t=${Date.now().toString()}`;
-    
-    const result = await postData(
-      url,
-      {
-        subject,
-        action: 'getInstance',
-        data: [word]
-      }
-    ) as unknown as GenerateWordResponse;
-    if (result && result.status !== 'error') {
-      return result.data;
-    }
-  }
-  catch (error) {
-    console.error(error);
-  }
-}
-
-async function postGenerateDefinition(word: string, endpoint: string, token: string, subject: string) {
-  try {
-    const url = `${endpoint}` +
-      `?token=${token}` +
-      `&t=${Date.now().toString()}`;
-
-    const result = await postData(
-      url,
-      {
-        subject,
-        action: 'getDefinition',
-        data: [word]
-      }
-    ) as unknown as GenerateWordResponse;
-    if (result && result.status !== 'error') {
-      return result.data;
-    }
-  }
-  catch (error) {
-    console.error(error);
-  }
-}
 
 function CardForm<T extends DefaultWordData = DefaultWordData>({
   mode,
@@ -77,7 +24,6 @@ function CardForm<T extends DefaultWordData = DefaultWordData>({
   create,
   update,
 }: CardFormProps<T>) {
-  const { isDemo, endpoint, token } = useGlobalSettings();
   const [word, setWord] = useState(mode === 'create' ? '' : data?.word);
   const [decription, setDescription] = useState(mode === 'create' ? '' : data?.description);
   const [instance, setInstance] = useState(mode === 'create' ? '' : data?.instance);
@@ -111,27 +57,23 @@ function CardForm<T extends DefaultWordData = DefaultWordData>({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showSuggestions]);
 
-  const handleGenerateDefenition = async () => {
-    if (!endpoint || !token || !word) return;
+  const generate = useGenerateText();
+
+  const handleGenerateDefinition = async () => {
+    if (!word) return;
     setIsDefinitionGenerating(true);
-    const result = isDemo ?
-      await getMockGenDefinition(word, 1000)
-      :
-      await postGenerateDefinition(word, endpoint, token, subject);
+    const result = await generate(word, subject, 'getDefinition');
     if (result) setDescription(result);
     setIsDefinitionGenerating(false);
-  }
+  };
 
   const handleGenerateInstance = async () => {
-    if (!endpoint || !token || !word) return;
+    if (!word) return;
     setIsSentenceGenerating(true);
-    const result = isDemo ?
-      await getMockGenSentence(word, 1000)
-      :
-      await postGenerateSentence(word, endpoint, token, subject);
+    const result = await generate(word, subject, 'getInstance');
     if (result) setInstance(result);
     setIsSentenceGenerating(false);
-  }
+  };
 
   const handleWordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -216,7 +158,7 @@ function CardForm<T extends DefaultWordData = DefaultWordData>({
               <button
                 disabled={isGenerating}
                 style={{ background: 'transparent', color: '#fff', fontSize: '16px', border: 0 }}
-                onClick={handleGenerateDefenition}
+                onClick={handleGenerateDefinition}
               >
                 {isDefinitionGenerating ? <LoadingAnimation /> : '✦'}
               </button>

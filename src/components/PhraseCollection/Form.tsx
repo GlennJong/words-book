@@ -3,7 +3,7 @@ import { getData } from '@/utils/fetch';
 import './style.css';
 import { PhraseData } from '@/pages/MainScreen/type';
 import LoadingAnimation from '@/components/LoadingAnimation';
-import { getMockGenDefinition, getMockGenSentence } from '@/mock';
+import { useGenerateText } from '@/utils/api';
 
 type PhraseFormProps = {
   mode: 'create' | 'edit';
@@ -29,6 +29,9 @@ function PhraseForm({ mode, data, onConfirm, create, update }: PhraseFormProps) 
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
+  const generate = useGenerateText();
+  
+
   useEffect(() => {
     if (!showSuggestions) return;
     const handleClick = (e: MouseEvent) => {
@@ -45,14 +48,14 @@ function PhraseForm({ mode, data, onConfirm, create, update }: PhraseFormProps) 
 
   const handleGenerateDefinition = async () => {
     setIsDefinitionGenerating(true);
-    const result = await getMockGenDefinition(word, 1000);
+    const result = await generate(word, 'phrase', 'getDefinition');
     if (result) setDescription(result);
     setIsDefinitionGenerating(false);
   };
 
   const handleGenerateInstance = async () => {
     setIsSentenceGenerating(true);
-    const result = await getMockGenSentence(word, 1000);
+    const result = await generate(word, 'phrase', 'getInstance');
     if (result) setInstance(result);
     setIsSentenceGenerating(false);
   };
