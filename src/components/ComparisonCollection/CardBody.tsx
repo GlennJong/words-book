@@ -126,30 +126,17 @@ const CardBody = ({ title, explain, level, words, not_matched, synonyms, isEdita
         </div>
         <Fragment key={title}>
           { formattedExplain &&
-            <div style={{
-                color: '#fff',
-                fontSize: '12px',
-                whiteSpace: 'break-spaces'
-              }}
-            >
+            <div className="content">
               { formattedExplain }
             </div>
           }
           { not_matched.length > 0 &&
-            <div style={{
-              color: '#fff',
-              fontSize: '12px',
-              whiteSpace: 'break-spaces'
-            }}>
+            <div className="content">
               <span>misreads:</span> { not_matched.join(', ') }
             </div>
           }
           { synonyms.length > 0 &&
-            <div style={{
-              color: '#fff',
-              fontSize: '12px',
-              whiteSpace: 'break-spaces'
-            }}>
+            <div className="content">
               <span>synonyms:</span> { synonyms.join(', ') }
             </div>
           }

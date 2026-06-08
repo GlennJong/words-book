@@ -3,6 +3,7 @@ import { useComparisonDataContext } from '@/context/ComparisonData/context';
 import { ComparisonData } from '@/pages/MainScreen/type';
 import CardBody from './CardBody';
 import ComparisonForm from './Form';
+import './style.css';
 
 const ComparisonCollection = createCollection<ComparisonData>({
   useCollectionContext: useComparisonDataContext,
