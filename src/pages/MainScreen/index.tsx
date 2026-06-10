@@ -10,7 +10,7 @@ import { useGlobalSettings } from '@/context/GlobalSetting/context';
 import ComparisonCollection from '@/components/ComparisonCollection';
 
 function Main() {
-  const [activeCollection, setActiveCollection] = useState<'word' | 'phrase' | 'comparison'>('comparison');
+  const [activeCollection, setActiveCollection] = useState<'word' | 'phrase' | 'comparison'>('word');
   const { setEndpoint, setToken, setIsOffline } = useGlobalSettings();
 
   return (

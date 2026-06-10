@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import FullScreenPanel from '../FullScreenPanel';
 import LoadingAnimation from '../LoadingAnimation';
 import { useGlobalSettings } from '@/context/GlobalSetting/context';
@@ -15,12 +15,12 @@ export type CollectionContextType = {
 };
 
 type CardCollectionProps = {
-  CardComponent: React.ComponentType;
+  renderCard: () => ReactElement;
   FormComponent: React.ComponentType<any>;
   useCollectionContext: () => CollectionContextType;
 };
 
-const CardCollection = ({ CardComponent, FormComponent, useCollectionContext }: CardCollectionProps) => {
+const CardCollection = ({ renderCard, FormComponent, useCollectionContext }: CardCollectionProps) => {
   const { isOffline, setTheme, theme } = useGlobalSettings();
   const { isFetching, isLevelMode, setIsLevelMode, upperLevel, level, shuffle } = useCollectionContext();
 
@@ -55,7 +55,7 @@ const CardCollection = ({ CardComponent, FormComponent, useCollectionContext }: 
         </div>
       )}
       <LevelSwiper disabled={isLevelMode} upperLevel={upperLevel} />
-      <CardComponent />
+      {renderCard()}
       <div
         style={{
           display: 'flex',

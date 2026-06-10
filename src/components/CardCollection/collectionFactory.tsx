@@ -1,4 +1,4 @@
-import { useMemo, type ComponentType } from 'react';
+import { useCallback, useMemo, type ComponentType } from 'react';
 import CardCollection, { type CollectionContextType } from '@/components/CardCollection';
 import Card from '@/components/CardCollection/Card';
 
@@ -25,15 +25,15 @@ type CollectionBuilderConfig<T extends { level: number }> = {
 export function createCollection<T extends { level: number }>(config: CollectionBuilderConfig<T>) {
   return function CollectionComponent() {
     const { create, update, data } = config.useCollectionContext();
-    const FormComponent = useMemo(() => config.FormFactory({ create, update, data }), [create, update, data]);
-    const WrappedCard = useMemo(
-      () => () => <Card data={data} update={update} body={config.CardBody} FormComponent={FormComponent} />,
+    const FormComponent = useMemo(() => config.FormFactory({ create, update, data }), [create, update]);
+    const renderCard = useCallback(
+      () => <Card data={data} update={update} body={config.CardBody} FormComponent={FormComponent} />,
       [data, update, FormComponent],
     );
 
     return (
       <CardCollection
-        CardComponent={WrappedCard}
+        renderCard={renderCard}
         FormComponent={FormComponent}
         useCollectionContext={config.useCollectionContext}
       />
