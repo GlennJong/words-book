@@ -68,8 +68,8 @@ interface CardBodyProps {
 }
 
 const CARDSIZE = {
-  width: '350px',
-  height: '540px',
+  width: '380px',
+  height: '560px',
 }
 
 const levelBackgroundMap: { [key: number]: keyof typeof wordcardBackground } = {
@@ -94,7 +94,7 @@ const CardBody = ({ title, explain, level, words, not_matched, synonyms, isEdita
   }, []);
 
   return (
-    <div className="card" style={{ maxWidth: '75vw', maxHeight: '70vh', ...CARDSIZE, ...wordcardBackground[backgroundKey] }}>
+    <div className="card" style={{ maxWidth: '90vw', maxHeight: '75vh', ...CARDSIZE, ...wordcardBackground[backgroundKey] }}>
       <div className="inner">
         <div className="level">
           { level === 5 ?
@@ -110,13 +110,13 @@ const CardBody = ({ title, explain, level, words, not_matched, synonyms, isEdita
             ✎
           </div>
         }
-        <div
+        {/* <div
           className="word"
           style={{
             marginBottom: '4px',
             fontSize: title.length > 10 ? '14px' : '18px',
           }}
-        >{ title }</div>
+        >{ title }</div> */}
         <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '8px', }}>
           { words.map(word => 
             <div className="tag">
