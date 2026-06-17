@@ -190,23 +190,23 @@ export const useComparisonData = ({ isDemo, isOffline, endpoint, token }: useCom
     };
   }, [submitPending]);
 
-  const create = (comparison: ComparisonData) => {
+  const create = useCallback((comparison: ComparisonData) => {
     pendingCreateRef.current = [...pendingCreateRef.current, comparison];
     setData((prev) => [...prev, comparison]);
     triggerDebounce();
-  };
+  }, [triggerDebounce]);
 
-  const update = (comparison: ComparisonData) => {
+  const update = useCallback((comparison: ComparisonData) => {
     pendingUpdateRef.current = [...pendingUpdateRef.current, comparison];
     setData((prev) => prev.map((item) => (item.id === comparison.id ? comparison : item)));
     triggerDebounce();
-  };
+  }, [triggerDebounce]);
 
-  const remove = (comparison: ComparisonData) => {
+  const remove = useCallback((comparison: ComparisonData) => {
     pendingRemoveRef.current = [...pendingRemoveRef.current, comparison];
     setData((prev) => prev.filter((item) => item.id !== comparison.id));
     triggerDebounce();
-  };
+  }, [triggerDebounce]);
 
   const resultData = useMemo(() => {
     const shuffled = shuffledIndexes

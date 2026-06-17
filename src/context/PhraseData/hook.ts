@@ -190,23 +190,23 @@ export const usePhraseData = ({ isDemo, isOffline, endpoint, token }: usePhraseD
     };
   }, [submitPending]);
 
-  const create = (phrase: PhraseData) => {
+  const create = useCallback((phrase: PhraseData) => {
     pendingCreateRef.current = [...pendingCreateRef.current, phrase];
     setData((prev) => [...prev, phrase]);
     triggerDebounce();
-  };
+  }, [triggerDebounce]);
 
-  const update = (phrase: PhraseData) => {
+  const update = useCallback((phrase: PhraseData) => {
     pendingUpdateRef.current = [...pendingUpdateRef.current, phrase];
     setData((prev) => prev.map((item) => (item.id === phrase.id ? phrase : item)));
     triggerDebounce();
-  };
+  }, [triggerDebounce]);
 
-  const remove = (phrase: PhraseData) => {
+  const remove = useCallback((phrase: PhraseData) => {
     pendingRemoveRef.current = [...pendingRemoveRef.current, phrase];
     setData((prev) => prev.filter((item) => item.id !== phrase.id));
     triggerDebounce();
-  };
+  }, [triggerDebounce]);
 
   const resultData = useMemo(() => {
     const shuffled = shuffledIndexes

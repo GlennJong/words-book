@@ -190,23 +190,27 @@ export const useWordData = ({ isDemo, isOffline, endpoint, token }: useWordDataP
     };
   }, [submitPending]);
 
-  const create = (word: WordData) => {
+  const create = useCallback((word: WordData) => {
     pendingCreateRef.current = [...pendingCreateRef.current, word];
     setData((prev) => [...prev, word]);
     triggerDebounce();
-  };
+  }, [triggerDebounce]);
 
-  const update = (word: WordData) => {
+  const update = useCallback((word: WordData) => {
     pendingUpdateRef.current = [...pendingUpdateRef.current, word];
     setData((prev) => prev.map((item) => (item.id === word.id ? { ...item, ...word } : item)));
     triggerDebounce();
-  };
+  }, [triggerDebounce]);
 
-  const remove = (word: WordData) => {
+  const remove = useCallback((word: WordData) => {
     pendingRemoveRef.current = [...pendingRemoveRef.current, word];
     setData((prev) => prev.filter((item) => item.id !== word.id));
     triggerDebounce();
-  };
+  }, [triggerDebounce]);
+
+  const shuffle = useCallback(() => {
+    setShuffledIndexes(shuffleIndexes(data.length));
+  }, [data.length, shuffleIndexes]);
 
   const resultData = useMemo(() => {
     const shuffled = shuffledIndexes
@@ -236,7 +240,7 @@ export const useWordData = ({ isDemo, isOffline, endpoint, token }: useWordDataP
     create,
     update,
     remove,
-    shuffle: () => setShuffledIndexes(shuffleIndexes(data.length)),
+    shuffle,
     submitPending,
     refetch: get,
   };
